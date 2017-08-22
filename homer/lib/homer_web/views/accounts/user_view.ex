@@ -1,6 +1,6 @@
-defmodule HomerWeb.UserView do
+defmodule HomerWeb.Accounts.UserView do
   use HomerWeb, :view
-  alias HomerWeb.UserView
+  alias HomerWeb.Accounts.UserView
 
   def render("index.json", %{users: users}) do
     %{users: render_many(users, UserView, "user.json")}

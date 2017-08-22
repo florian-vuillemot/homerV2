@@ -17,6 +17,12 @@ defmodule HomerWeb.Router do
     pipe_through :api # Use the default browser stack
 
     #get "/", PageController, :index
+    #resources "/users", UserController
+  end
+
+  scope "/accounts", HomerWeb.Accounts, as: :accounts do
+    pipe_through :api
+
     resources "/users", UserController
   end
 
