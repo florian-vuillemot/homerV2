@@ -1,6 +1,6 @@
-defmodule HomerWeb.Monetization.FundingView do
+defmodule HomerWeb.Monetizations.FundingView do
   use HomerWeb, :view
-  alias HomerWeb.Monetization.FundingView
+  alias HomerWeb.Monetizations.FundingView
 
   def render("index.json", %{fundings: fundings}) do
     %{fundings: render_many(fundings, FundingView, "funding.json")}

@@ -1,4 +1,4 @@
-defmodule Homer.Monetization do
+defmodule Homer.Monetizations do
   @moduledoc """
   The Monetization context.
   """
@@ -6,7 +6,7 @@ defmodule Homer.Monetization do
   import Ecto.Query, warn: false
   alias Homer.Repo
 
-  alias Homer.Monetization.Funding
+  alias Homer.Monetizations.Funding
 
   @doc """
   Returns the list of fundings.
