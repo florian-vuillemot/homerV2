@@ -1,4 +1,4 @@
-defmodule HomerWeb.UserController do
+defmodule HomerWeb.Accounts.UserController do
   use HomerWeb, :controller
 
   alias Homer.Accounts
@@ -15,7 +15,7 @@ defmodule HomerWeb.UserController do
     with {:ok, %User{} = user} <- Accounts.create_user(user_params) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", user_path(conn, :show, user))
+      |> put_resp_header("location", accounts_user_path(conn, :show, user))
       |> render("show.json", user: user)
     end
   end
