@@ -6,7 +6,8 @@ defmodule HomerWeb.UserControllerTest do
 
   @create_attrs %{email: "some email", password: "some password"}
   @update_attrs %{email: "some updated email", password: "some updated password"}
-  @invalid_attrs %{email: nil, password: nil}
+  @invalid_attrs [%{email: nil, password: nil}, %{email: nil, password: "password"}, %{email: "email", password: nil}, %{email: nil}, %{password: nil}]
+  @miss_attrs [%{email: nil}, %{password: nil}, %{}]
 
   def fixture(:user) do
     {:ok, user} = Accounts.create_user(@create_attrs)
@@ -20,25 +21,29 @@ defmodule HomerWeb.UserControllerTest do
   describe "index" do
     test "lists all users", %{conn: conn} do
       conn = get conn, user_path(conn, :index)
-      assert json_response(conn, 200)["data"] == []
+      assert json_response(conn, 200)["users"] == []
     end
   end
 
   describe "create user" do
     test "renders user when data is valid", %{conn: conn} do
       conn = post conn, user_path(conn, :create), user: @create_attrs
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      assert %{"id" => id} = json_response(conn, 201)["user"]
 
       conn = get conn, user_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
+      assert json_response(conn, 200)["user"] == %{
         "id" => id,
-        "email" => "some email",
-        "password" => "some password"}
+        "email" => "some email"}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post conn, user_path(conn, :create), user: @invalid_attrs
-      assert json_response(conn, 422)["errors"] != %{}
+      bad_attrs = @invalid_attrs ++ @miss_attrs
+      Enum.map(bad_attrs,
+        fn attrs ->
+          new_conn = post conn, user_path(conn, :create), user: attrs
+          assert json_response(new_conn, 422)["errors"] != %{}
+        end
+      )
     end
   end
 
@@ -47,18 +52,21 @@ defmodule HomerWeb.UserControllerTest do
 
     test "renders user when data is valid", %{conn: conn, user: %User{id: id} = user} do
       conn = put conn, user_path(conn, :update, user), user: @update_attrs
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
+      assert %{"id" => ^id} = json_response(conn, 200)["user"]
 
       conn = get conn, user_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
+      assert json_response(conn, 200)["user"] == %{
         "id" => id,
-        "email" => "some updated email",
-        "password" => "some updated password"}
+        "email" => "some updated email"}
     end
 
     test "renders errors when data is invalid", %{conn: conn, user: user} do
-      conn = put conn, user_path(conn, :update, user), user: @invalid_attrs
-      assert json_response(conn, 422)["errors"] != %{}
+      Enum.map(@invalid_attrs,
+        fn attrs ->
+          new_conn = put conn, user_path(conn, :update, user), user: attrs
+          assert json_response(new_conn, 422)["errors"] != %{}
+       end
+      )
     end
   end
 
