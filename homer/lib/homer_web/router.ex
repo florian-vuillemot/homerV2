@@ -26,7 +26,7 @@ defmodule HomerWeb.Router do
     resources "/users", UserController
   end
 
-  scope "/monetization", HomerWeb.Monetization, as: :monetization do
+  scope "/monetizations", HomerWeb.Monetizations, as: :monetizations do
     pipe_through :api
 
     resources "/fundings", FundingController

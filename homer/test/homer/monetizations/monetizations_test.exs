@@ -1,10 +1,10 @@
-defmodule Homer.MonetizationTest do
+defmodule Homer.MonetizationsTest do
   use Homer.DataCase
 
-  alias Homer.Monetization
+  alias Homer.Monetizations
 
   describe "fundings" do
-    alias Homer.Monetization.Funding
+    alias Homer.Monetizations.Funding
 
     @valid_attrs %{description: "some description", name: "some name", unit: "some unit"}
     @update_attrs %{description: "some updated description", name: "some updated name", unit: "some updated unit"}
@@ -15,23 +15,23 @@ defmodule Homer.MonetizationTest do
       {:ok, funding} =
         attrs
         |> Enum.into(@valid_attrs)
-        |> Monetization.create_funding()
+        |> Monetizations.create_funding()
 
       funding
     end
 
     test "list_fundings/0 returns all fundings" do
       funding = funding_fixture()
-      assert Monetization.list_fundings() == [funding]
+      assert Monetizations.list_fundings() == [funding]
     end
 
     test "get_funding!/1 returns the funding with given id" do
       funding = funding_fixture()
-      assert Monetization.get_funding!(funding.id) == funding
+      assert Monetizations.get_funding!(funding.id) == funding
     end
 
     test "create_funding/1 with valid data creates a funding" do
-      assert {:ok, %Funding{} = funding} = Monetization.create_funding(@valid_attrs)
+      assert {:ok, %Funding{} = funding} = Monetizations.create_funding(@valid_attrs)
       assert funding.create == nil
       assert funding.description == "some description"
       assert funding.name == "some name"
@@ -40,15 +40,15 @@ defmodule Homer.MonetizationTest do
     end
 
     test "create_funding/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Monetization.create_funding(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Monetizations.create_funding(@invalid_attrs)
       Enum.map(@invalid_attrs_create,
-        fn attrs -> assert {:error, %Ecto.Changeset{}} = Monetization.create_funding(attrs) end
+        fn attrs -> assert {:error, %Ecto.Changeset{}} = Monetizations.create_funding(attrs) end
       )
     end
 
     test "update_funding/2 with valid data updates the funding" do
       init_funding = funding_fixture()
-      assert {:ok, funding} = Monetization.update_funding(init_funding, @update_attrs)
+      assert {:ok, funding} = Monetizations.update_funding(init_funding, @update_attrs)
       assert %Funding{} = funding
       assert funding.create == init_funding.create
       assert funding.description == "some updated description"
@@ -59,19 +59,19 @@ defmodule Homer.MonetizationTest do
 
     test "update_funding/2 with invalid data returns error changeset" do
       funding = funding_fixture()
-      assert {:error, %Ecto.Changeset{}} = Monetization.update_funding(funding, @invalid_attrs)
-      assert funding == Monetization.get_funding!(funding.id)
+      assert {:error, %Ecto.Changeset{}} = Monetizations.update_funding(funding, @invalid_attrs)
+      assert funding == Monetizations.get_funding!(funding.id)
     end
 
     test "delete_funding/1 deletes the funding" do
       funding = funding_fixture()
-      assert {:ok, %Funding{}} = Monetization.delete_funding(funding)
-      assert_raise Ecto.NoResultsError, fn -> Monetization.get_funding!(funding.id) end
+      assert {:ok, %Funding{}} = Monetizations.delete_funding(funding)
+      assert_raise Ecto.NoResultsError, fn -> Monetizations.get_funding!(funding.id) end
     end
 
     test "change_funding/1 returns a funding changeset" do
       funding = funding_fixture()
-      assert %Ecto.Changeset{} = Monetization.change_funding(funding)
+      assert %Ecto.Changeset{} = Monetizations.change_funding(funding)
     end
   end
 end

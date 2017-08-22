@@ -1,7 +1,7 @@
-defmodule Homer.Monetization.Funding do
+defmodule Homer.Monetizations.Funding do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Homer.Monetization.Funding
+  alias Homer.Monetizations.Funding
 
 
   schema "fundings" do
