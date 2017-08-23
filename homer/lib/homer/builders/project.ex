@@ -5,6 +5,7 @@ defmodule Homer.Builders.Project do
 
 
   schema "projects" do
+    field :name, string
     field :create_at, :utc_datetime
     field :description, :string
     field :status, :integer
@@ -17,7 +18,8 @@ defmodule Homer.Builders.Project do
   @doc false
   def changeset(%Project{} = project, attrs) do
     project
-    |> cast(attrs, [:description, :to_raise, :create_at, :status])
-    |> validate_required([:description, :to_raise, :create_at, :status])
+    |> cast(attrs, [:name, :description, :to_raise, :create_at, :status])
+    |> validate_required([:name, :description, :to_raise, :create_at, :status])
+    |> unique_constraint(:name)
   end
 end

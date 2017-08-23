@@ -12,6 +12,7 @@ defmodule HomerWeb.Builders.ProjectView do
 
   def render("project.json", %{project: project}) do
     %{id: project.id,
+      name: project.name,
       description: project.description,
       to_raise: project.to_raise,
       create_at: project.create_at,
