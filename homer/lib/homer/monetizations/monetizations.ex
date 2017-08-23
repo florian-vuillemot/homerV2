@@ -51,9 +51,8 @@ defmodule Homer.Monetizations do
 
   """
   def create_funding(attrs \\ %{}) do
-    %Funding{}
+    %Funding{create: Ecto.DateTime.utc}
     |> Funding.changeset(attrs)
-    |> Map.put(:create, Ecto.DateTime.utc)
     |> Repo.insert()
   end
 
