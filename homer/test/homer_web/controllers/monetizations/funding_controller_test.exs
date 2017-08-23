@@ -4,8 +4,8 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
   alias Homer.Monetizations
   alias Homer.Monetizations.Funding
 
-  @create_attrs %{description: "some description", name: "some name", unit: "some unit"}
-  @update_attrs %{description: "some updated description", name: "some updated name", unit: "some updated unit"}
+  @create_attrs %{description: "some description", name: "some name", unit: "some unit", days: 10, validate: 80}
+  @update_attrs %{description: "some updated description", name: "some updated name", unit: "some updated unit", days: 15, validate: 85}
   @invalid_attrs %{description: nil, name: nil, unit: nil}
 
   def fixture(:funding) do
@@ -38,7 +38,9 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
         "description" => "some description",
         "name" => "some name",
         "unit" => "some unit",
-        "valid" => false}
+        "valid" => false,
+        "days" => 10,
+        "validate" => 80}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -62,7 +64,9 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
         "description" => "some updated description",
         "name" => "some updated name",
         "unit" => "some updated unit",
-        "valid" => false}
+        "valid" => false,
+        "days" => 15,
+        "validate" => 85}
     end
 
     test "renders errors when data is invalid", %{conn: conn, funding: funding} do
