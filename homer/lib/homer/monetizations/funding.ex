@@ -10,6 +10,8 @@ defmodule Homer.Monetizations.Funding do
     field :name, :string
     field :unit, :string
     field :valid, :boolean, default: false
+    field :days, :integer
+    field :validate, :integer
 
     timestamps()
   end
@@ -17,7 +19,7 @@ defmodule Homer.Monetizations.Funding do
   @doc false
   def changeset(%Funding{} = funding, attrs) do
     funding
-    |> cast(attrs, [:name, :description, :unit])
-    |> validate_required([:name, :description, :unit])
+    |> cast(attrs, [:name, :description, :unit, :days, :validate])
+    |> validate_required([:name, :description, :unit, :days, :validate])
   end
 end
