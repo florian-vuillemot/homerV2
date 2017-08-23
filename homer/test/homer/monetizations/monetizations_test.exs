@@ -6,10 +6,15 @@ defmodule Homer.MonetizationsTest do
   describe "fundings" do
     alias Homer.Monetizations.Funding
 
-    @valid_attrs %{description: "some description", name: "some name", unit: "some unit"}
-    @update_attrs %{description: "some updated description", name: "some updated name", unit: "some updated unit"}
-    @invalid_attrs %{description: nil, name: nil, unit: nil}
-    @invalid_attrs_create [%{description: nil, name: "name", unit: "unit"}, %{description: "description", name: nil, unit: "unit"}, %{description: "description", name: "name", unit: nil}]
+    @valid_attrs %{description: "some description", name: "some name", unit: "some unit", days: 10, validate: 80}
+    @update_attrs %{description: "some updated description", name: "some updated name", unit: "some updated unit", days: 15, validate: 85}
+    @invalid_attrs %{description: nil, name: nil, unit: nil, days: nil, validate: nil}
+    @invalid_attrs_create [%{description: nil, name: "name", unit: "unit", days: 10, validate: 80},
+      %{description: "description", name: nil, unit: "unit", days: 10, validate: 80},
+      %{description: "description", name: "name", unit: nil, days: 10, validate: 80},
+      %{description: "description", name: "name", unit: "unit", days: nil, validate: 80},
+      %{description: "description", name: "name", unit: "unit", days: 10, validate: nil},
+    ]
 
     def funding_fixture(attrs \\ %{}) do
       {:ok, funding} =
@@ -37,6 +42,8 @@ defmodule Homer.MonetizationsTest do
       assert funding.name == "some name"
       assert funding.unit == "some unit"
       assert funding.valid == false
+      assert funding.days == 10
+      assert funding.validate == 80
     end
 
     test "create_funding/1 with invalid data returns error changeset" do
@@ -55,6 +62,8 @@ defmodule Homer.MonetizationsTest do
       assert funding.name == "some updated name"
       assert funding.unit == "some updated unit"
       assert funding.valid == false
+      assert funding.days == 15
+      assert funding.validate == 85
     end
 
     test "update_funding/2 with invalid data returns error changeset" do
