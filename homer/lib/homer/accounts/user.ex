@@ -2,11 +2,13 @@ defmodule Homer.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
   alias Homer.Accounts.User
+  alias Homer.Invests.Investor
 
 
   schema "users" do
     field :email, :string
     field :password, :string
+    has_many :investor_on, Investor
 
     timestamps()
   end

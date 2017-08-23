@@ -12,6 +12,7 @@ defmodule HomerWeb.Accounts.UserView do
 
   def render("user.json", %{user: user}) do
     %{id: user.id,
-      email: user.email}
+      email: user.email,
+      investor_on: user.investor_on}
   end
 end
