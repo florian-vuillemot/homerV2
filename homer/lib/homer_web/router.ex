@@ -32,6 +32,12 @@ defmodule HomerWeb.Router do
     resources "/fundings", FundingController
   end
 
+  scope "/builders", HomerWeb.Builders, as: :builders do
+    pipe_through :api
+
+    resources "/projects", ProjectController
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", HomerWeb do
   #   pipe_through :api
