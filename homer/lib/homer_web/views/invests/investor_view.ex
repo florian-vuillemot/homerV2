@@ -1,0 +1,18 @@
+defmodule HomerWeb.Invests.InvestorView do
+  use HomerWeb, :view
+  alias HomerWeb.Invests.InvestorView
+
+  def render("index.json", %{investors: investors}) do
+    %{data: render_many(investors, InvestorView, "investor.json")}
+  end
+
+  def render("show.json", %{investor: investor}) do
+    %{data: render_one(investor, InvestorView, "investor.json")}
+  end
+
+  def render("investor.json", %{investor: investor}) do
+    %{id: investor.id,
+      funding: investor.funding,
+      comment: investor.comment}
+  end
+end
