@@ -3,6 +3,7 @@ defmodule Homer.Monetizations.Funding do
   import Ecto.Changeset
   alias Homer.Monetizations.Funding
 
+  alias Homer.Builders.Project
 
   schema "fundings" do
     field :create, :utc_datetime
@@ -12,6 +13,8 @@ defmodule Homer.Monetizations.Funding do
     field :valid, :boolean, default: false
     field :days, :integer
     field :validate, :integer
+
+    has_many :projects, Project
 
     timestamps()
   end

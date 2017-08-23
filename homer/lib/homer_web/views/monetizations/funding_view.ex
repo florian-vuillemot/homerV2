@@ -18,6 +18,7 @@ defmodule HomerWeb.Monetizations.FundingView do
       create: funding.create,
       valid: funding.valid,
       days: funding.days,
-      validate: funding.validate}
+      validate: funding.validate,
+      projects: funding.projects}
   end
 end
