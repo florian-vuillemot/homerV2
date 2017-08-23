@@ -9,6 +9,41 @@ defmodule Homer.Builders do
   alias Homer.Builders.Project
 
   @doc """
+  Return string the status for project from atom.
+
+  ## Examples
+    iex> status_projects(:create)
+    "To fund"
+
+    iex> status_projects(:funding)
+    "Funding"
+
+    iex> status_projects(:in_progress)
+    "In progress"
+
+    iex> status_projects(:success)
+    "Finish with success"
+
+    iex> status_projects(:fail)
+    "Finish in fail"
+
+    iex> status_projects(:abandoned)
+    "Abandoned"
+  """
+  def status_projects(status) do
+    status_map = %{
+      :create => "To fund",
+      :funding => "Funding",
+      :in_progress => "In progress",
+      :success => "Finish with success",
+      :fail => "Finish in fail",
+      :abandoned => "Abandoned"
+    }
+
+    status_map[status]
+  end
+
+  @doc """
   Returns the list of projects.
 
   ## Examples
@@ -50,7 +85,7 @@ defmodule Homer.Builders do
 
   """
   def create_project(attrs \\ %{}) do
-    %Project{}
+    %Project{create_at: Ecto.DateTime.utc, status: status_projects(:create)}
     |> Project.changeset(attrs)
     |> Repo.insert()
   end

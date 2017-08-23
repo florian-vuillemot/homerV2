@@ -4,9 +4,9 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
   alias Homer.Builders
   alias Homer.Builders.Project
 
-  @create_attrs %{create_at: "2010-04-17 14:00:00.000000Z", description: "some description", status: 42, to_raise: 42}
-  @update_attrs %{create_at: "2011-05-18 15:01:01.000000Z", description: "some updated description", status: 43, to_raise: 43}
-  @invalid_attrs %{create_at: nil, description: nil, status: nil, to_raise: nil}
+  @create_attrs %{name: "some name", description: "some description", to_raise: 42}
+  @update_attrs %{name: "some updated name", description: "some updated description", to_raise: 43}
+  @invalid_attrs %{name: nil, description: nil, to_raise: nil}
 
   def fixture(:project) do
     {:ok, project} = Builders.create_project(@create_attrs)
@@ -32,9 +32,10 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
       conn = get conn, builders_project_path(conn, :show, id)
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
-        "create_at" => "2010-04-17 14:00:00.000000Z",
+        "name" => "some name",
+        "create_at" => "#{Ecto.DateTime.to_iso8601(Ecto.DateTime.utc)}.000000Z",
         "description" => "some description",
-        "status" => 42,
+        "status" => Homer.Builders.status_projects(:create),
         "to_raise" => 42}
     end
 
@@ -47,16 +48,17 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
   describe "update project" do
     setup [:create_project]
 
-    test "renders project when data is valid", %{conn: conn, project: %Project{id: id} = project} do
+    test "renders project when data is valid", %{conn: conn, project: %Project{id: id, create_at: create_at} = project} do
       conn = put conn, builders_project_path(conn, :update, project), project: @update_attrs
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
       conn = get conn, builders_project_path(conn, :show, id)
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
-        "create_at" => "2011-05-18 15:01:01.000000Z",
+        "name" => "some updated name",
+        "create_at" => "#{Ecto.DateTime.to_iso8601(create_at)}.000000Z",
         "description" => "some updated description",
-        "status" => 43,
+        "status" => Homer.Builders.status_projects(:create),
         "to_raise" => 43}
     end
 

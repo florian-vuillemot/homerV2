@@ -8,7 +8,7 @@ defmodule Homer.Builders.Project do
     field :name, :string
     field :create_at, :utc_datetime
     field :description, :string
-    field :status, :integer
+    field :status, :string
     field :to_raise, :integer
     field :funding_id, :id
 
