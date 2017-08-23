@@ -33,7 +33,8 @@ defmodule HomerWeb.Accounts.UserControllerTest do
       conn = get conn, accounts_user_path(conn, :show, id)
       assert json_response(conn, 200)["user"] == %{
         "id" => id,
-        "email" => "some email"}
+        "email" => "some email",
+        "investor_on" => []}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -57,7 +58,8 @@ defmodule HomerWeb.Accounts.UserControllerTest do
       conn = get conn, accounts_user_path(conn, :show, id)
       assert json_response(conn, 200)["user"] == %{
         "id" => id,
-        "email" => "some updated email"}
+        "email" => "some updated email",
+        "investor_on" => []}
     end
 
     test "renders errors when data is invalid", %{conn: conn, user: user} do
