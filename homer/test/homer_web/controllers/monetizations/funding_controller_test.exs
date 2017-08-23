@@ -29,12 +29,11 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
       conn = post conn, monetizations_funding_path(conn, :create), funding: @create_attrs
       assert %{"id" => id} = json_response(conn, 201)["funding"]
 
-
       conn = get conn, monetizations_funding_path(conn, :show, id)
       response = json_response(conn, 200)["funding"]
       assert response == %{
         "id" => id,
-        "create" => response["create"],
+        "create" => "#{Ecto.DateTime.to_iso8601(Ecto.DateTime.utc)}.000000Z",
         "description" => "some description",
         "name" => "some name",
         "unit" => "some unit",
@@ -52,7 +51,7 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
   describe "update funding" do
     setup [:create_funding]
 
-    test "renders funding when data is valid", %{conn: conn, funding: %Funding{id: id} = funding} do
+    test "renders funding when data is valid", %{conn: conn, funding: %Funding{id: id, create: create} = funding} do
       conn = put conn, monetizations_funding_path(conn, :update, funding), funding: @update_attrs
       assert %{"id" => ^id} = json_response(conn, 200)["funding"]
 
@@ -60,7 +59,7 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
       response = json_response(conn, 200)["funding"]
       assert response == %{
         "id" => id,
-        "create" => response["create"],
+        "create" => "#{Ecto.DateTime.to_iso8601(create)}.000000Z",
         "description" => "some updated description",
         "name" => "some updated name",
         "unit" => "some updated unit",
