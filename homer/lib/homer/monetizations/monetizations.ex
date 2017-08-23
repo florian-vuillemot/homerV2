@@ -18,7 +18,9 @@ defmodule Homer.Monetizations do
 
   """
   def list_fundings do
-    Repo.all(Funding)
+    Funding
+    |> Repo.all
+    |> Repo.preload(:projects)
   end
 
   @doc """
@@ -35,7 +37,11 @@ defmodule Homer.Monetizations do
       ** (Ecto.NoResultsError)
 
   """
-  def get_funding!(id), do: Repo.get!(Funding, id)
+  def get_funding!(id) do
+    Funding
+    |> Repo.get!(id)
+    |> Repo.preload(:projects)
+  end
 
   @doc """
   Creates a funding.
@@ -51,9 +57,16 @@ defmodule Homer.Monetizations do
 
   """
   def create_funding(attrs \\ %{}) do
-    %Funding{create: Ecto.DateTime.utc}
+    funding = %Funding{create: Ecto.DateTime.utc}
     |> Funding.changeset(attrs)
     |> Repo.insert()
+
+    case funding do
+      {:ok, instance} ->
+        instance = %{instance | projects: []}
+        {:ok, instance}
+      _ -> funding
+    end
   end
 
   @doc """
