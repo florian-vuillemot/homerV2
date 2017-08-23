@@ -4,8 +4,8 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
   alias Homer.Invests
   alias Homer.Invests.Investor
 
-  @create_attrs %{comment: "some comment", funding: 42}
-  @update_attrs %{comment: "some updated comment", funding: 43}
+  @create_attrs %{comment: "some comment", funding: 42, user: 1}
+  @update_attrs %{comment: "some updated comment", funding: 43, user: 1}
   @invalid_attrs %{comment: nil, funding: nil}
 
   def fixture(:investor) do
