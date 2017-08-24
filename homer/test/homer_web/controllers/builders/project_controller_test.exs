@@ -36,7 +36,8 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
         "create_at" => "#{Ecto.DateTime.to_iso8601(Ecto.DateTime.utc)}.000000Z",
         "description" => "some description",
         "status" => Homer.Builders.status_projects(:create),
-        "to_raise" => 42}
+        "to_raise" => 42,
+        "steps" => []}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -59,7 +60,8 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
         "create_at" => "#{Ecto.DateTime.to_iso8601(create_at)}.000000Z",
         "description" => "some updated description",
         "status" => Homer.Builders.status_projects(:create),
-        "to_raise" => 43}
+        "to_raise" => 43,
+        "steps" => []}
     end
 
     test "renders errors when data is invalid", %{conn: conn, project: project} do
