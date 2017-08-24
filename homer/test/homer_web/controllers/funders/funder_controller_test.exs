@@ -20,17 +20,17 @@ defmodule HomerWeb.Funders.FunderControllerTest do
   describe "index" do
     test "lists all funders", %{conn: conn} do
       conn = get conn, funders_funder_path(conn, :index)
-      assert json_response(conn, 200)["data"] == []
+      assert json_response(conn, 200)["funders"] == []
     end
   end
 
   describe "create funder" do
     test "renders funder when data is valid", %{conn: conn} do
       conn = post conn, funders_funder_path(conn, :create), funder: @create_attrs
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      assert %{"id" => id} = json_response(conn, 201)["funder"]
 
       conn = get conn, funders_funder_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
+      assert json_response(conn, 200)["funder"] == %{
         "id" => id,
         "status" => "Creator",
         "project" => nil,
@@ -48,10 +48,10 @@ defmodule HomerWeb.Funders.FunderControllerTest do
 
     test "renders funder when data is valid", %{conn: conn, funder: %Funder{id: id} = funder} do
       conn = put conn, funders_funder_path(conn, :update, funder), funder: @update_attrs
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
+      assert %{"id" => ^id} = json_response(conn, 200)["funder"]
 
       conn = get conn, funders_funder_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
+      assert json_response(conn, 200)["funder"] == %{
         "id" => id,
         "status" => "Worker",
         "project" => nil,

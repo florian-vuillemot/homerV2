@@ -3,11 +3,11 @@ defmodule HomerWeb.Funders.FunderView do
   alias HomerWeb.Funders.FunderView
 
   def render("index.json", %{funders: funders}) do
-    %{data: render_many(funders, FunderView, "funder.json")}
+    %{funders: render_many(funders, FunderView, "funder.json")}
   end
 
   def render("show.json", %{funder: funder}) do
-    %{data: render_one(funder, FunderView, "funder.json")}
+    %{funder: render_one(funder, FunderView, "funder.json")}
   end
 
   def render("funder.json", %{funder: funder}) do
