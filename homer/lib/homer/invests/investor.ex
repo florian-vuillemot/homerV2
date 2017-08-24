@@ -8,7 +8,7 @@ defmodule Homer.Invests.Investor do
 
   schema "investors" do
     field :comment, :string
-    field :funding, :integer
+
     field :project_id, :id
     #field :user_id, :id
     belongs_to :user, User
@@ -21,7 +21,7 @@ defmodule Homer.Invests.Investor do
   @doc false
   def changeset(%Investor{} = investor, attrs) do
     investor
-    |> cast(attrs, [:funding, :comment])
-    |> validate_required([:funding, :comment])
+    |> cast(attrs, [:comment])
+    |> validate_required([:comment])
   end
 end
