@@ -50,6 +50,12 @@ defmodule HomerWeb.Router do
     resources "/step_templates", StepTemplateController
   end
 
+  scope "/steps", HomerWeb.Steps, as: :steps do
+    pipe_through :api
+
+    resources "/steps", StepController
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", HomerWeb do
   #   pipe_through :api
