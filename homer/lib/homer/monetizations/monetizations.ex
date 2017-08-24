@@ -21,6 +21,7 @@ defmodule Homer.Monetizations do
     Funding
     |> Repo.all
     |> Repo.preload(:projects)
+    |> Repo.preload(:step_templates)
   end
 
   @doc """
@@ -41,6 +42,7 @@ defmodule Homer.Monetizations do
     Funding
     |> Repo.get!(id)
     |> Repo.preload(:projects)
+    |> Repo.preload(:step_templates)
   end
 
   @doc """
@@ -63,7 +65,7 @@ defmodule Homer.Monetizations do
 
     case funding do
       {:ok, instance} ->
-        instance = %{instance | projects: []}
+        instance = %{instance | projects: [], step_templates: []}
         {:ok, instance}
       _ -> funding
     end
