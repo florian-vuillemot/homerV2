@@ -4,14 +4,16 @@ defmodule Homer.StepTemplates.StepTemplate do
   alias Homer.StepTemplates.StepTemplate
 
   alias Homer.Monetizations.Funding
-
+  alias Homer.Steps.Step
 
   schema "step_templates" do
     field :description, :string
     field :name, :string
     field :rank, :integer
+
     #field :funding_id, :id
     belongs_to :funding, Funding
+    has_many :steps, Step
 
     timestamps()
   end

@@ -47,6 +47,7 @@ defmodule Homer.BuildersTest do
       assert project.description == "some description"
       assert project.status == Homer.Builders.status_projects(:create)
       assert project.to_raise == 42
+      assert project.steps == []
     end
 
     test "create_project/1 with invalid data returns error changeset" do
@@ -62,6 +63,7 @@ defmodule Homer.BuildersTest do
       assert project.description == "some updated description"
       assert project.status == init_project.status
       assert project.to_raise == 43
+      assert project.steps == []
     end
 
     test "update_project/2 with invalid data returns error changeset" do

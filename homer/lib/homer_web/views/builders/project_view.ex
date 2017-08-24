@@ -16,6 +16,7 @@ defmodule HomerWeb.Builders.ProjectView do
       description: project.description,
       to_raise: project.to_raise,
       create_at: project.create_at,
-      status: project.status}
+      status: project.status,
+      steps: project.steps}
   end
 end
