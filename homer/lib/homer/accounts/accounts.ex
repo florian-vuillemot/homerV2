@@ -21,6 +21,7 @@ defmodule Homer.Accounts do
     User
     |> Repo.all
     |> Repo.preload(:investor_on)
+    |> Repo.preload(:funders)
   end
 
   @doc """
@@ -41,6 +42,7 @@ defmodule Homer.Accounts do
     User
     |> Repo.get!(id)
     |> Repo.preload(:investor_on)
+    |> Repo.preload(:funders)
   end
 
   @doc """
@@ -62,7 +64,7 @@ defmodule Homer.Accounts do
 
     case user do
       {:ok, instance} ->
-        instance = %{instance | investor_on: []}
+        instance = %{instance | investor_on: [], funders: []}
         {:ok, instance}
       _ -> user
     end

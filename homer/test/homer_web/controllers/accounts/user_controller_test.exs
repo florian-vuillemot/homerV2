@@ -34,7 +34,8 @@ defmodule HomerWeb.Accounts.UserControllerTest do
       assert json_response(conn, 200)["user"] == %{
         "id" => id,
         "email" => "some email",
-        "investor_on" => []}
+        "investor_on" => [],
+        "funders" => []}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -59,7 +60,8 @@ defmodule HomerWeb.Accounts.UserControllerTest do
       assert json_response(conn, 200)["user"] == %{
         "id" => id,
         "email" => "some updated email",
-        "investor_on" => []}
+        "investor_on" => [],
+        "funders" => []}
     end
 
     test "renders errors when data is invalid", %{conn: conn, user: user} do
