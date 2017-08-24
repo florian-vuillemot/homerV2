@@ -5,7 +5,7 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
   alias Homer.Builders.Project
 
   @create_attrs %{name: "some name", description: "some description", to_raise: 42}
-  @update_attrs %{name: "some updated name", description: "some updated description", to_raise: 43}
+  @update_attrs %{name: "some updated name", description: "some updated description", to_raise: 43, github: "some github"}
   @invalid_attrs %{name: nil, description: nil, to_raise: nil}
 
   def fixture(:project) do
@@ -37,7 +37,8 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
         "description" => "some description",
         "status" => Homer.Builders.status_projects(:create),
         "to_raise" => 42,
-        "steps" => []}
+        "steps" => [],
+        "github" => nil}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -61,7 +62,8 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
         "description" => "some updated description",
         "status" => Homer.Builders.status_projects(:create),
         "to_raise" => 43,
-        "steps" => []}
+        "steps" => [],
+        "github" => "some github"}
     end
 
     test "renders errors when data is invalid", %{conn: conn, project: project} do

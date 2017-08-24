@@ -7,7 +7,7 @@ defmodule Homer.BuildersTest do
     alias Homer.Builders.Project
 
     @valid_attrs %{name: "some name", description: "some description", to_raise: 42}
-    @update_attrs %{name: "some update name", description: "some updated description", to_raise: 43}
+    @update_attrs %{name: "some update name", description: "some updated description", to_raise: 43, github: "some github"}
     @invalid_attrs %{name: nil, description: nil, to_raise: nil}
 
     def project_fixture(attrs \\ %{}) do
@@ -48,6 +48,7 @@ defmodule Homer.BuildersTest do
       assert project.status == Homer.Builders.status_projects(:create)
       assert project.to_raise == 42
       assert project.steps == []
+      assert project.github == nil
     end
 
     test "create_project/1 with invalid data returns error changeset" do
@@ -64,6 +65,7 @@ defmodule Homer.BuildersTest do
       assert project.status == init_project.status
       assert project.to_raise == 43
       assert project.steps == []
+      assert project.github == "some github"
     end
 
     test "update_project/2 with invalid data returns error changeset" do
