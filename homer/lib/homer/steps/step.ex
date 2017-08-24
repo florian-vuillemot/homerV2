@@ -19,7 +19,7 @@ defmodule Homer.Steps.Step do
   @doc false
   def changeset(%Step{} = step, attrs) do
     step
-    |> cast(attrs, [:create_at])
-    |> validate_required([:create_at])
+    |> cast(attrs, [])
+    |> validate_required([])
   end
 end

@@ -50,7 +50,7 @@ defmodule Homer.Steps do
 
   """
   def create_step(attrs \\ %{}) do
-    %Step{}
+    %Step{create_at: Ecto.DateTime.utc}
     |> Step.changeset(attrs)
     |> Repo.insert()
   end

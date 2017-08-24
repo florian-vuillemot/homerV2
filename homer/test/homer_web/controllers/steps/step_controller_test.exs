@@ -4,9 +4,9 @@ defmodule HomerWeb.Steps.StepControllerTest do
   alias Homer.Steps
   alias Homer.Steps.Step
 
-  @create_attrs %{create_at: "2010-04-17 14:00:00.000000Z"}
-  @update_attrs %{create_at: "2011-05-18 15:01:01.000000Z"}
-  @invalid_attrs %{create_at: nil}
+  @create_attrs %{}
+  @update_attrs %{}
+  #@invalid_attrs %{}
 
   def fixture(:step) do
     {:ok, step} = Steps.create_step(@create_attrs)
@@ -32,32 +32,32 @@ defmodule HomerWeb.Steps.StepControllerTest do
       conn = get conn, steps_step_path(conn, :show, id)
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
-        "create_at" => "2010-04-17T14:00:00.000000Z"}
+        "create_at" => "#{Ecto.DateTime.to_iso8601(Ecto.DateTime.utc)}.000000Z"}
     end
 
-    test "renders errors when data is invalid", %{conn: conn} do
-      conn = post conn, steps_step_path(conn, :create), step: @invalid_attrs
-      assert json_response(conn, 422)["errors"] != %{}
-    end
+    #test "renders errors when data is invalid", %{conn: conn} do
+     # conn = post conn, steps_step_path(conn, :create), step: @invalid_attrs
+      #assert json_response(conn, 422)["errors"] != %{}
+    #end
   end
 
   describe "update step" do
     setup [:create_step]
 
-    test "renders step when data is valid", %{conn: conn, step: %Step{id: id} = step} do
+    test "renders step when data is valid", %{conn: conn, step: %Step{id: id, create_at: create_at} = step} do
       conn = put conn, steps_step_path(conn, :update, step), step: @update_attrs
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
       conn = get conn, steps_step_path(conn, :show, id)
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
-        "create_at" => "2011-05-18T15:01:01.000000Z"}
+        "create_at" => "#{Ecto.DateTime.to_iso8601(create_at)}.000000Z"}
     end
 
-    test "renders errors when data is invalid", %{conn: conn, step: step} do
-      conn = put conn, steps_step_path(conn, :update, step), step: @invalid_attrs
-      assert json_response(conn, 422)["errors"] != %{}
-    end
+#    test "renders errors when data is invalid", %{conn: conn, step: step} do
+ #     conn = put conn, steps_step_path(conn, :update, step), step: @invalid_attrs
+  #    assert json_response(conn, 422)["errors"] != %{}
+   # end
   end
 
   describe "delete step" do
