@@ -9,6 +9,31 @@ defmodule Homer.Funders do
   alias Homer.Funders.Funder
 
   @doc """
+  Return true if status funder exist.
+  Only value of status validate by this function is allow in database.
+
+  ## Examples
+
+      iex> is_status_funder?("Creator")
+      true
+
+      iex> is_status_funder?("Worker")
+      true
+
+      iex> is_status_funder?("OHER")
+      false
+
+  """
+  def is_status_funder?(status) do
+    status_cast = %{
+      "Creator" => 1,
+      "Worker" => 1
+    }
+
+    Map.has_key?(status_cast, status)
+  end
+
+  @doc """
   Returns the list of funders.
 
   ## Examples
@@ -39,6 +64,7 @@ defmodule Homer.Funders do
 
   @doc """
   Creates a funder.
+  Check if status is allow before insert.
 
   ## Examples
 
@@ -49,14 +75,21 @@ defmodule Homer.Funders do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_funder(attrs \\ %{}) do
-    %Funder{}
-    |> Funder.changeset(attrs)
-    |> Repo.insert()
+  def create_funder(attrs) do
+    case attrs do
+      %{status: status}
+        -> check_funder_status(attrs, status)
+      %{"status" => status}
+        -> check_funder_status(attrs, status)
+      _
+        -> check_funder_status(nil, nil)
+    end
   end
+
 
   @doc """
   Updates a funder.
+  Check if status is allow before update.
 
   ## Examples
 
@@ -68,9 +101,14 @@ defmodule Homer.Funders do
 
   """
   def update_funder(%Funder{} = funder, attrs) do
-    funder
-    |> Funder.changeset(attrs)
-    |> Repo.update()
+    case attrs do
+      %{status: status}
+        -> check_funder_status(attrs, status, funder)
+      %{"status" => status}
+        -> check_funder_status(attrs, status, funder)
+      _
+        -> check_funder_status(nil, nil, funder)
+    end
   end
 
   @doc """
@@ -100,5 +138,32 @@ defmodule Homer.Funders do
   """
   def change_funder(%Funder{} = funder) do
     Funder.changeset(funder, %{})
+  end
+
+##########################################################################
+##########################################################################
+##########################################################################
+##########################################################################
+
+  @doc false
+  defp check_funder_status(attrs, status, funder \\ nil) do
+    case is_status_funder?(status) do
+      true -> insert_funder(attrs, funder)
+      _    -> insert_funder(%{status: nil}, funder)
+    end
+  end
+
+  @doc false
+  defp insert_funder(attrs, funder) do
+    case funder do
+      nil
+        -> %Funder{}
+           |> Funder.changeset(attrs)
+           |> Repo.insert()
+      _
+        -> funder
+           |> Funder.changeset(attrs)
+           |> Repo.update()
+    end
   end
 end

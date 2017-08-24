@@ -6,9 +6,12 @@ defmodule Homer.FundersTest do
   describe "funders" do
     alias Homer.Funders.Funder
 
-    @valid_attrs %{status: "some status"}
-    @update_attrs %{status: "some updated status"}
+    @valid_attrs %{status: "Creator"}
+    @update_attrs %{status: "Worker"}
     @invalid_attrs %{status: nil}
+
+    @valid_status_funder ["Creator", "Worker"]
+    @invalid_status_funder ["bad", nil]
 
     def funder_fixture(attrs \\ %{}) do
       {:ok, funder} =
@@ -31,7 +34,7 @@ defmodule Homer.FundersTest do
 
     test "create_funder/1 with valid data creates a funder" do
       assert {:ok, %Funder{} = funder} = Funders.create_funder(@valid_attrs)
-      assert funder.status == "some status"
+      assert funder.status == "Creator"
     end
 
     test "create_funder/1 with invalid data returns error changeset" do
@@ -42,7 +45,7 @@ defmodule Homer.FundersTest do
       funder = funder_fixture()
       assert {:ok, funder} = Funders.update_funder(funder, @update_attrs)
       assert %Funder{} = funder
-      assert funder.status == "some updated status"
+      assert funder.status == "Worker"
     end
 
     test "update_funder/2 with invalid data returns error changeset" do
@@ -60,6 +63,20 @@ defmodule Homer.FundersTest do
     test "change_funder/1 returns a funder changeset" do
       funder = funder_fixture()
       assert %Ecto.Changeset{} = Funders.change_funder(funder)
+    end
+
+    test "is_status_funder?/1 with valid data" do
+      Enum.map(
+        @valid_status_funder,
+        fn status -> assert true = Funders.is_status_funder?(status) end
+      )
+    end
+
+    test "is_status_funder?/1 with invalid data" do
+      Enum.map(
+        @invalid_status_funder,
+        fn status -> assert true != Funders.is_status_funder?(status) end
+      )
     end
   end
 end

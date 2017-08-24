@@ -4,8 +4,8 @@ defmodule HomerWeb.Funders.FunderControllerTest do
   alias Homer.Funders
   alias Homer.Funders.Funder
 
-  @create_attrs %{status: "some status"}
-  @update_attrs %{status: "some updated status"}
+  @create_attrs %{status: "Creator"}
+  @update_attrs %{status: "Worker"}
   @invalid_attrs %{status: nil}
 
   def fixture(:funder) do
@@ -32,7 +32,7 @@ defmodule HomerWeb.Funders.FunderControllerTest do
       conn = get conn, funders_funder_path(conn, :show, id)
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
-        "status" => "some status"}
+        "status" => "Creator"}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -51,7 +51,7 @@ defmodule HomerWeb.Funders.FunderControllerTest do
       conn = get conn, funders_funder_path(conn, :show, id)
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
-        "status" => "some updated status"}
+        "status" => "Worker"}
     end
 
     test "renders errors when data is invalid", %{conn: conn, funder: funder} do
