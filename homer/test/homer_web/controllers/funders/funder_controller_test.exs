@@ -32,7 +32,9 @@ defmodule HomerWeb.Funders.FunderControllerTest do
       conn = get conn, funders_funder_path(conn, :show, id)
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
-        "status" => "Creator"}
+        "status" => "Creator",
+        "project" => nil,
+        "user" => nil}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -51,7 +53,9 @@ defmodule HomerWeb.Funders.FunderControllerTest do
       conn = get conn, funders_funder_path(conn, :show, id)
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
-        "status" => "Worker"}
+        "status" => "Worker",
+        "project" => nil,
+        "user" => nil}
     end
 
     test "renders errors when data is invalid", %{conn: conn, funder: funder} do

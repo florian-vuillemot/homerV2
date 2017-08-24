@@ -35,6 +35,8 @@ defmodule Homer.FundersTest do
     test "create_funder/1 with valid data creates a funder" do
       assert {:ok, %Funder{} = funder} = Funders.create_funder(@valid_attrs)
       assert funder.status == "Creator"
+      assert funder.user == nil
+      assert funder.project == nil
     end
 
     test "create_funder/1 with invalid data returns error changeset" do
@@ -46,6 +48,8 @@ defmodule Homer.FundersTest do
       assert {:ok, funder} = Funders.update_funder(funder, @update_attrs)
       assert %Funder{} = funder
       assert funder.status == "Worker"
+      assert funder.user == nil
+      assert funder.project == nil
     end
 
     test "update_funder/2 with invalid data returns error changeset" do

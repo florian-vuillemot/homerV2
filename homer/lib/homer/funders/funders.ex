@@ -43,7 +43,10 @@ defmodule Homer.Funders do
 
   """
   def list_funders do
-    Repo.all(Funder)
+    Funder
+    |> Repo.all
+    |> Repo.preload(:project)
+    |> Repo.preload(:user)
   end
 
   @doc """
@@ -60,7 +63,12 @@ defmodule Homer.Funders do
       ** (Ecto.NoResultsError)
 
   """
-  def get_funder!(id), do: Repo.get!(Funder, id)
+  def get_funder!(id) do
+    Funder
+    |> Repo.get!(id)
+    |> Repo.preload(:project)
+    |> Repo.preload(:user)
+  end
 
   @doc """
   Creates a funder.
@@ -76,13 +84,21 @@ defmodule Homer.Funders do
 
   """
   def create_funder(attrs) do
-    case attrs do
-      %{status: status}
-        -> check_funder_status(attrs, status)
-      %{"status" => status}
-        -> check_funder_status(attrs, status)
-      _
-        -> check_funder_status(nil, nil)
+    funder =
+      case attrs do
+        %{status: status}
+          -> check_funder_status(attrs, status)
+        %{"status" => status}
+          -> check_funder_status(attrs, status)
+        _
+          -> check_funder_status(nil, nil)
+      end
+
+    case funder do
+      {:ok, instance} ->
+        instance = %{instance | user: nil, project: nil}
+        {:ok, instance}
+      _ -> funder
     end
   end
 

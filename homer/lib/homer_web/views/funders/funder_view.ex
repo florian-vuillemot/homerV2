@@ -12,6 +12,8 @@ defmodule HomerWeb.Funders.FunderView do
 
   def render("funder.json", %{funder: funder}) do
     %{id: funder.id,
-      status: funder.status}
+      status: funder.status,
+      user: funder.user,
+      project: funder.project}
   end
 end
