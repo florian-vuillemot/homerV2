@@ -18,7 +18,9 @@ defmodule Homer.StepTemplates do
 
   """
   def list_step_templates do
-    Repo.all(StepTemplate)
+    StepTemplate
+    |> Repo.all
+    |> Repo.preload(:steps)
   end
 
   @doc """
@@ -35,7 +37,11 @@ defmodule Homer.StepTemplates do
       ** (Ecto.NoResultsError)
 
   """
-  def get_step_template!(id), do: Repo.get!(StepTemplate, id)
+  def get_step_template!(id) do
+    StepTemplate
+    |> Repo.get!(id)
+    |> Repo.preload(:steps)
+  end
 
   @doc """
   Creates a step_template.
@@ -50,9 +56,16 @@ defmodule Homer.StepTemplates do
 
   """
   def create_step_template(attrs \\ %{}) do
-    %StepTemplate{}
+    step_template = %StepTemplate{}
     |> StepTemplate.changeset(attrs)
     |> Repo.insert()
+
+    case step_template do
+      {:ok, instance} ->
+        instance = %{instance | steps: []}
+        {:ok, instance}
+      _ -> step_template
+    end
   end
 
   @doc """

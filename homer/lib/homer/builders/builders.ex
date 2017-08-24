@@ -53,7 +53,9 @@ defmodule Homer.Builders do
 
   """
   def list_projects do
-    Repo.all(Project)
+    Project
+    |> Repo.all
+    |> Repo.preload(:steps)
   end
 
   @doc """
@@ -70,7 +72,11 @@ defmodule Homer.Builders do
       ** (Ecto.NoResultsError)
 
   """
-  def get_project!(id), do: Repo.get!(Project, id)
+  def get_project!(id) do
+    Project
+    |> Repo.get!(id)
+    |> Repo.preload(:steps)
+  end
 
   @doc """
   Creates a project.
@@ -85,9 +91,16 @@ defmodule Homer.Builders do
 
   """
   def create_project(attrs \\ %{}) do
-    %Project{create_at: Ecto.DateTime.utc, status: status_projects(:create)}
+    project = %Project{create_at: Ecto.DateTime.utc, status: status_projects(:create)}
     |> Project.changeset(attrs)
     |> Repo.insert()
+
+    case project do
+      {:ok, instance} ->
+        instance = %{instance | steps: []}
+        {:ok, instance}
+      _ -> project
+    end
   end
 
   @doc """

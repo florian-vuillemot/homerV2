@@ -4,6 +4,7 @@ defmodule Homer.Builders.Project do
   alias Homer.Builders.Project
 
   alias Homer.Monetizations.Funding
+  alias Homer.Steps.Step
 
   schema "projects" do
     field :name, :string
@@ -11,8 +12,10 @@ defmodule Homer.Builders.Project do
     field :description, :string
     field :status, :string
     field :to_raise, :integer
+
     #field :funding_id, :id
     belongs_to :funding, Funding
+    has_many :steps, Step
 
     timestamps()
   end
