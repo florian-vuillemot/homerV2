@@ -5,6 +5,7 @@ defmodule Homer.Monetizations.Funding do
 
   alias Homer.Builders.Project
   alias Homer.StepTemplates.StepTemplate
+  alias Homer.InvestsAllows.InvestAllow
 
   schema "fundings" do
     field :create, :utc_datetime
@@ -17,6 +18,7 @@ defmodule Homer.Monetizations.Funding do
 
     has_many :projects, Project
     has_many :step_templates, StepTemplate
+    has_many :fundings, InvestAllow
 
     timestamps()
   end

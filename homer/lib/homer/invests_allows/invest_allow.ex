@@ -3,12 +3,14 @@ defmodule Homer.InvestsAllows.InvestAllow do
   import Ecto.Changeset
   alias Homer.InvestsAllows.InvestAllow
 
+  alias Homer.Monetizations.Funding
 
   schema "invests_allows" do
     field :description, :string
     field :invest, :integer
     field :name, :string
-    field :funding_id, :id
+    #field :funding_id, :id
+    belongs_to :funding, Funding
 
     timestamps()
   end
