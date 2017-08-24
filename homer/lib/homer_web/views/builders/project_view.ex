@@ -3,11 +3,11 @@ defmodule HomerWeb.Builders.ProjectView do
   alias HomerWeb.Builders.ProjectView
 
   def render("index.json", %{projects: projects}) do
-    %{data: render_many(projects, ProjectView, "project.json")}
+    %{projects: render_many(projects, ProjectView, "project.json")}
   end
 
   def render("show.json", %{project: project}) do
-    %{data: render_one(project, ProjectView, "project.json")}
+    %{project: render_one(project, ProjectView, "project.json")}
   end
 
   def render("project.json", %{project: project}) do
@@ -20,7 +20,8 @@ defmodule HomerWeb.Builders.ProjectView do
       steps: project.steps,
       github: project.github,
       investors: project.investors,
-      funders: project.funders
+      funders: project.funders,
+      funding: project.funding
     }
   end
 end

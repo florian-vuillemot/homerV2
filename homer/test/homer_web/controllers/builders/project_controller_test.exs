@@ -20,17 +20,17 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
   describe "index" do
     test "lists all projects", %{conn: conn} do
       conn = get conn, builders_project_path(conn, :index)
-      assert json_response(conn, 200)["data"] == []
+      assert json_response(conn, 200)["projects"] == []
     end
   end
 
   describe "create project" do
     test "renders project when data is valid", %{conn: conn} do
       conn = post conn, builders_project_path(conn, :create), project: @create_attrs
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      assert %{"id" => id} = json_response(conn, 201)["project"]
 
       conn = get conn, builders_project_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
+      assert json_response(conn, 200)["project"] == %{
         "id" => id,
         "name" => "some name",
         "create_at" => "#{Ecto.DateTime.to_iso8601(Ecto.DateTime.utc)}.000000Z",
@@ -40,12 +40,13 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
         "steps" => [],
         "github" => nil,
         "investors" => [],
-        "funders" => []}
+        "funders" => [],
+        "funding" => nil}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
       conn = post conn, builders_project_path(conn, :create), project: @invalid_attrs
-      assert json_response(conn, 422)["errors"] != %{}
+      assert json_response(conn, 422)["project"] != %{}
     end
   end
 
@@ -54,10 +55,10 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
 
     test "renders project when data is valid", %{conn: conn, project: %Project{id: id, create_at: create_at} = project} do
       conn = put conn, builders_project_path(conn, :update, project), project: @update_attrs
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
+      assert %{"id" => ^id} = json_response(conn, 200)["project"]
 
       conn = get conn, builders_project_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
+      assert json_response(conn, 200)["project"] == %{
         "id" => id,
         "name" => "some updated name",
         "create_at" => "#{Ecto.DateTime.to_iso8601(create_at)}.000000Z",
@@ -67,7 +68,8 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
         "steps" => [],
         "github" => "some github",
         "investors" => [],
-        "funders" => []}
+        "funders" => [],
+        "funding" => nil}
     end
 
     test "renders errors when data is invalid", %{conn: conn, project: project} do
