@@ -12,6 +12,7 @@ defmodule Homer.Builders.Project do
     field :description, :string
     field :status, :string
     field :to_raise, :integer
+    field :github, :string
 
     #field :funding_id, :id
     belongs_to :funding, Funding
@@ -23,7 +24,7 @@ defmodule Homer.Builders.Project do
   @doc false
   def changeset(%Project{} = project, attrs) do
     project
-    |> cast(attrs, [:name, :description, :to_raise])
+    |> cast(attrs, [:name, :description, :to_raise, :github])
     |> validate_required([:name, :description, :to_raise])
     |> unique_constraint(:name)
   end
