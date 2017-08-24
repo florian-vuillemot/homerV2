@@ -4,9 +4,9 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
   alias Homer.Invests
   alias Homer.Invests.Investor
 
-  @create_attrs %{comment: "some comment", funding: 42, user: 1}
-  @update_attrs %{comment: "some updated comment", funding: 43, user: 1}
-  @invalid_attrs %{comment: nil, funding: nil}
+  @create_attrs %{comment: "some comment", user: 1}
+  @update_attrs %{comment: "some updated comment", user: 1}
+  @invalid_attrs %{comment: nil, user: nil}
 
   def fixture(:investor) do
     {:ok, investor} = Invests.create_investor(@create_attrs)
@@ -33,8 +33,10 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
         "comment" => "some comment",
-        "funding" => 42,
-        "steps_validation" => []}
+        "steps_validation" => [],
+        "invest_allow" => nil,
+        "project" => nil,
+        "user" => nil}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -54,8 +56,10 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
         "comment" => "some updated comment",
-        "funding" => 43,
-        "steps_validation" => []}
+        "steps_validation" => [],
+        "invest_allow" => nil,
+        "project" => nil,
+        "user" => nil}
     end
 
     test "renders errors when data is invalid", %{conn: conn, investor: investor} do

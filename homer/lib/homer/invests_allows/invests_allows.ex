@@ -18,7 +18,9 @@ defmodule Homer.InvestsAllows do
 
   """
   def list_invests_allows do
-    Repo.all(InvestAllow)
+    InvestAllow
+    |> Repo.all
+    |> Repo.preload(:investors)
   end
 
   @doc """
@@ -35,7 +37,11 @@ defmodule Homer.InvestsAllows do
       ** (Ecto.NoResultsError)
 
   """
-  def get_invest_allow!(id), do: Repo.get!(InvestAllow, id)
+  def get_invest_allow!(id) do
+    InvestAllow
+    |> Repo.get!(id)
+    |> Repo.preload(:investors)
+  end
 
   @doc """
   Creates a invest_allow.
@@ -50,9 +56,17 @@ defmodule Homer.InvestsAllows do
 
   """
   def create_invest_allow(attrs \\ %{}) do
-    %InvestAllow{:create_at => Ecto.DateTime.utc}
+    invest = %InvestAllow{:create_at => Ecto.DateTime.utc}
     |> InvestAllow.changeset(attrs)
     |> Repo.insert()
+
+
+    case invest do
+      {:ok, instance} ->
+        instance = %{instance | investors: []}
+        {:ok, instance}
+      _ -> invest
+    end
   end
 
   @doc """

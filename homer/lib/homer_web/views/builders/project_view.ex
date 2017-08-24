@@ -18,6 +18,7 @@ defmodule HomerWeb.Builders.ProjectView do
       create_at: project.create_at,
       status: project.status,
       steps: project.steps,
-      github: project.github}
+      github: project.github,
+      investors: project.investors}
   end
 end

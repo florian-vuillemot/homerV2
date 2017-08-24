@@ -6,9 +6,9 @@ defmodule Homer.InvestsTest do
   describe "investors" do
     alias Homer.Invests.Investor
 
-    @valid_attrs %{comment: "some comment", funding: 42}
-    @update_attrs %{comment: "some updated comment", funding: 43}
-    @invalid_attrs %{comment: nil, funding: nil}
+    @valid_attrs %{comment: "some comment"}
+    @update_attrs %{comment: "some updated comment"}
+    @invalid_attrs %{comment: nil}
 
     def investor_fixture(attrs \\ %{}) do
       {:ok, investor} =
@@ -32,7 +32,6 @@ defmodule Homer.InvestsTest do
     test "create_investor/1 with valid data creates a investor" do
       assert {:ok, %Investor{} = investor} = Invests.create_investor(@valid_attrs)
       assert investor.comment == "some comment"
-      assert investor.funding == 42
       assert investor.steps_validation == []
     end
 
@@ -45,7 +44,6 @@ defmodule Homer.InvestsTest do
       assert {:ok, investor} = Invests.update_investor(investor, @update_attrs)
       assert %Investor{} = investor
       assert investor.comment == "some updated comment"
-      assert investor.funding == 43
       assert investor.steps_validation == []
     end
 

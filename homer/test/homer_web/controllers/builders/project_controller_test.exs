@@ -38,7 +38,8 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
         "status" => Homer.Builders.status_projects(:create),
         "to_raise" => 42,
         "steps" => [],
-        "github" => nil}
+        "github" => nil,
+        "investors" => []}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -63,7 +64,8 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
         "status" => Homer.Builders.status_projects(:create),
         "to_raise" => 43,
         "steps" => [],
-        "github" => "some github"}
+        "github" => "some github",
+        "investors" => []}
     end
 
     test "renders errors when data is invalid", %{conn: conn, project: project} do

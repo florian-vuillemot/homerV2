@@ -21,6 +21,9 @@ defmodule Homer.Invests do
     Investor
     |> Repo.all
     |> Repo.preload(:steps_validation)
+    |> Repo.preload(:user)
+    |> Repo.preload(:invest_allow)
+    |> Repo.preload(:project)
   end
 
   @doc """
@@ -41,6 +44,10 @@ defmodule Homer.Invests do
     Investor
     |> Repo.get!(id)
     |> Repo.preload(:steps_validation)
+    |> Repo.preload(:steps_validation)
+    |> Repo.preload(:user)
+    |> Repo.preload(:invest_allow)
+    |> Repo.preload(:project)
   end
 
   @doc """
@@ -62,7 +69,7 @@ defmodule Homer.Invests do
 
     case investor do
       {:ok, instance} ->
-        instance = %{instance | steps_validation: []}
+        instance = %{instance | steps_validation: [], user: nil, invest_allow: nil, project: nil}
         {:ok, instance}
       _ -> investor
     end
