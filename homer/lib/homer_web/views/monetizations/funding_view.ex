@@ -20,6 +20,7 @@ defmodule HomerWeb.Monetizations.FundingView do
       days: funding.days,
       validate: funding.validate,
       projects: funding.projects,
-      step_templates: funding.step_templates}
+      step_templates: funding.step_templates,
+      invests_allows: funding.invests_allows}
   end
 end

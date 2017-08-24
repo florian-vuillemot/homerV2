@@ -41,7 +41,8 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
         "days" => 10,
         "validate" => 80,
         "projects" => [],
-        "step_templates" => []}
+        "step_templates" => [],
+         "invests_allows" => []}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -69,7 +70,8 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
         "days" => 15,
         "validate" => 85,
         "projects" => [],
-        "step_templates" => []}
+        "step_templates" => [],
+        "invests_allows" => []}
     end
 
     test "renders errors when data is invalid", %{conn: conn, funding: funding} do
