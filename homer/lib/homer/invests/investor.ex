@@ -4,6 +4,7 @@ defmodule Homer.Invests.Investor do
   alias Homer.Invests.Investor
   alias Homer.Accounts.User
 
+  alias Homer.StepsValidation.StepValidation
 
   schema "investors" do
     field :comment, :string
@@ -11,6 +12,8 @@ defmodule Homer.Invests.Investor do
     field :project_id, :id
     #field :user_id, :id
     belongs_to :user, User
+
+    has_many :steps_validation, StepValidation
 
     timestamps()
   end

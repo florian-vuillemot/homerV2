@@ -5,6 +5,7 @@ defmodule Homer.Steps.Step do
 
   alias Homer.StepTemplates.StepTemplate
   alias Homer.Builders.Project
+  alias Homer.StepsValidation.StepValidation
 
   schema "steps" do
     field :create_at, :utc_datetime
@@ -12,6 +13,8 @@ defmodule Homer.Steps.Step do
     #field :step_template_id, :id
     belongs_to :project, Project
     belongs_to :step_template, StepTemplate
+
+    has_many :steps_validation, StepValidation
 
     timestamps()
   end

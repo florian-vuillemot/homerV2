@@ -3,12 +3,16 @@ defmodule Homer.StepsValidation.StepValidation do
   import Ecto.Changeset
   alias Homer.StepsValidation.StepValidation
 
+  alias Homer.Steps.Step
+  alias Homer.Invests.Investor
 
   schema "steps_validation" do
     field :comment, :string
     field :valid, :integer
-    field :step_id, :id
-    field :investor_id, :id
+    #field :step_id, :id
+    #field :investor_id, :id
+    belongs_to :step, Step
+    belongs_to :investor, Investor
 
     timestamps()
   end

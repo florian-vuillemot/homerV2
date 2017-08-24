@@ -18,7 +18,9 @@ defmodule Homer.Steps do
 
   """
   def list_steps do
-    Repo.all(Step)
+    Step
+    |> Repo.all
+    |> Repo.preload(:steps_validation)
   end
 
   @doc """
@@ -35,7 +37,11 @@ defmodule Homer.Steps do
       ** (Ecto.NoResultsError)
 
   """
-  def get_step!(id), do: Repo.get!(Step, id)
+  def get_step!(id) do
+    Step
+    |> Repo.get!(id)
+    |> Repo.preload(:steps_validation)
+  end
 
   @doc """
   Creates a step.
@@ -50,9 +56,16 @@ defmodule Homer.Steps do
 
   """
   def create_step(attrs \\ %{}) do
-    %Step{create_at: Ecto.DateTime.utc}
+    step = %Step{create_at: Ecto.DateTime.utc}
     |> Step.changeset(attrs)
     |> Repo.insert()
+
+    case step do
+      {:ok, instance} ->
+        instance = %{instance | steps_validation: []}
+        {:ok, instance}
+      _ -> step
+    end
   end
 
   @doc """
