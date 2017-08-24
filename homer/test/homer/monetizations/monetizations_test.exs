@@ -55,6 +55,8 @@ defmodule Homer.MonetizationsTest do
       assert funding.valid == false
       assert funding.days == 10
       assert funding.validate == 80
+      assert funding.projects == []
+      assert funding.step_templates == []
     end
 
     test "create_funding/1 with invalid data returns error changeset" do
@@ -75,6 +77,8 @@ defmodule Homer.MonetizationsTest do
       assert funding.valid == false
       assert funding.days == 15
       assert funding.validate == 85
+      assert funding.projects == []
+      assert funding.step_templates == []
     end
 
     test "update_funding/2 with invalid data returns error changeset" do

@@ -44,6 +44,11 @@ defmodule HomerWeb.Router do
     resources "/investors", InvestorController
   end
 
+  scope "/step_templates", HomerWeb.StepTemplates, as: :step_templates do
+    pipe_through :api
+
+    resources "/step_templates", StepTemplateController
+  end
 
   # Other scopes may use custom stacks.
   # scope "/api", HomerWeb do
