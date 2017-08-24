@@ -33,6 +33,7 @@ defmodule Homer.InvestsTest do
       assert {:ok, %Investor{} = investor} = Invests.create_investor(@valid_attrs)
       assert investor.comment == "some comment"
       assert investor.funding == 42
+      assert investor.steps_validation == []
     end
 
     test "create_investor/1 with invalid data returns error changeset" do
@@ -45,6 +46,7 @@ defmodule Homer.InvestsTest do
       assert %Investor{} = investor
       assert investor.comment == "some updated comment"
       assert investor.funding == 43
+      assert investor.steps_validation == []
     end
 
     test "update_investor/2 with invalid data returns error changeset" do
