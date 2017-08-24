@@ -18,7 +18,7 @@ defmodule Homer.Monetizations.Funding do
 
     has_many :projects, Project
     has_many :step_templates, StepTemplate
-    has_many :fundings, InvestAllow
+    has_many :invests_allows, InvestAllow
 
     timestamps()
   end
