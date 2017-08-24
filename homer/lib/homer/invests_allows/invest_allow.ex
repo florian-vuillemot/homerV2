@@ -4,6 +4,7 @@ defmodule Homer.InvestsAllows.InvestAllow do
   alias Homer.InvestsAllows.InvestAllow
 
   alias Homer.Monetizations.Funding
+  alias Homer.Invests.Investor
 
   schema "invests_allows" do
     field :description, :string
@@ -13,6 +14,7 @@ defmodule Homer.InvestsAllows.InvestAllow do
 
     #field :funding_id, :id
     belongs_to :funding, Funding
+    has_many :investors, Investor
 
     timestamps()
   end
