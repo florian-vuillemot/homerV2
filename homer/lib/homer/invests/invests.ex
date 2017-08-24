@@ -18,7 +18,9 @@ defmodule Homer.Invests do
 
   """
   def list_investors do
-    Repo.all(Investor)
+    Investor
+    |> Repo.all
+    |> Repo.preload(:steps_validation)
   end
 
   @doc """
@@ -35,7 +37,11 @@ defmodule Homer.Invests do
       ** (Ecto.NoResultsError)
 
   """
-  def get_investor!(id), do: Repo.get!(Investor, id)
+  def get_investor!(id) do
+    Investor
+    |> Repo.get!(id)
+    |> Repo.preload(:steps_validation)
+  end
 
   @doc """
   Creates a investor.
@@ -50,9 +56,16 @@ defmodule Homer.Invests do
 
   """
   def create_investor(attrs \\ %{}) do
-    %Investor{}
+    investor = %Investor{}
     |> Investor.changeset(attrs)
     |> Repo.insert()
+
+    case investor do
+      {:ok, instance} ->
+        instance = %{instance | steps_validation: []}
+        {:ok, instance}
+      _ -> investor
+    end
   end
 
   @doc """

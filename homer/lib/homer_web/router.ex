@@ -56,6 +56,12 @@ defmodule HomerWeb.Router do
     resources "/steps", StepController
   end
 
+  scope "/steps_validation", HomerWeb.StepsValidation, as: :steps_validation do
+    pipe_through :api
+
+    resources "/steps_validation", StepValidationController
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", HomerWeb do
   #   pipe_through :api

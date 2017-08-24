@@ -33,7 +33,8 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
         "comment" => "some comment",
-        "funding" => 42}
+        "funding" => 42,
+        "steps_validation" => []}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -53,7 +54,8 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
       assert json_response(conn, 200)["data"] == %{
         "id" => id,
         "comment" => "some updated comment",
-        "funding" => 43}
+        "funding" => 43,
+        "steps_validation" => []}
     end
 
     test "renders errors when data is invalid", %{conn: conn, investor: investor} do
