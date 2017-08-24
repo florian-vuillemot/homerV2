@@ -13,6 +13,9 @@ defmodule HomerWeb.Invests.InvestorView do
   def render("investor.json", %{investor: investor}) do
     %{id: investor.id,
       comment: investor.comment,
-      steps_validation: investor.steps_validation}
+      steps_validation: investor.steps_validation,
+      project: investor.project,
+      user: investor.user,
+      invest_allow: investor.invest_allow}
   end
 end
