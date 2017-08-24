@@ -14,6 +14,7 @@ defmodule HomerWeb.InvestsAllows.InvestAllowView do
     %{id: invest_allow.id,
       name: invest_allow.name,
       description: invest_allow.description,
-      invest: invest_allow.invest}
+      invest: invest_allow.invest,
+      create_at: invest_allow.create_at}
   end
 end

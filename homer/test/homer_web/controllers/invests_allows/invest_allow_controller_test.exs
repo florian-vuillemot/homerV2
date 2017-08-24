@@ -34,7 +34,8 @@ defmodule HomerWeb.InvestsAllows.InvestAllowControllerTest do
         "id" => id,
         "description" => "some description",
         "invest" => 42,
-        "name" => "some name"}
+        "name" => "some name",
+        "create_at" => "#{Ecto.DateTime.to_iso8601(Ecto.DateTime.utc)}.000000Z"}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -46,7 +47,7 @@ defmodule HomerWeb.InvestsAllows.InvestAllowControllerTest do
   describe "update invest_allow" do
     setup [:create_invest_allow]
 
-    test "renders invest_allow when data is valid", %{conn: conn, invest_allow: %InvestAllow{id: id} = invest_allow} do
+    test "renders invest_allow when data is valid", %{conn: conn, invest_allow: %InvestAllow{id: id, create_at: create_at} = invest_allow} do
       conn = put conn, invests_allows_invest_allow_path(conn, :update, invest_allow), invest_allow: @update_attrs
       assert %{"id" => ^id} = json_response(conn, 200)["data"]
 
@@ -55,7 +56,8 @@ defmodule HomerWeb.InvestsAllows.InvestAllowControllerTest do
         "id" => id,
         "description" => "some updated description",
         "invest" => 43,
-        "name" => "some updated name"}
+        "name" => "some updated name",
+        "create_at" => "#{Ecto.DateTime.to_iso8601(create_at)}.000000Z"}
     end
 
     test "renders errors when data is invalid", %{conn: conn, invest_allow: invest_allow} do

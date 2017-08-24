@@ -9,6 +9,8 @@ defmodule Homer.InvestsAllows.InvestAllow do
     field :description, :string
     field :invest, :integer
     field :name, :string
+    field :create_at, :utc_datetime
+
     #field :funding_id, :id
     belongs_to :funding, Funding
 
