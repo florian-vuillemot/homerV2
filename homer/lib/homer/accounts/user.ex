@@ -4,11 +4,14 @@ defmodule Homer.Accounts.User do
   alias Homer.Accounts.User
   alias Homer.Invests.Investor
 
+  alias Homer.Funders.Funder
 
   schema "users" do
     field :email, :string
     field :password, :string
+
     has_many :investor_on, Investor
+    has_many :funders, Funder
 
     timestamps()
   end

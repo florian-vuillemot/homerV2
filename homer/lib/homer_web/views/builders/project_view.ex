@@ -19,6 +19,8 @@ defmodule HomerWeb.Builders.ProjectView do
       status: project.status,
       steps: project.steps,
       github: project.github,
-      investors: project.investors}
+      investors: project.investors,
+      funders: project.funders
+    }
   end
 end

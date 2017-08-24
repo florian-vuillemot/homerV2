@@ -57,6 +57,7 @@ defmodule Homer.Builders do
     |> Repo.all
     |> Repo.preload(:steps)
     |> Repo.preload(:investors)
+    |> Repo.preload(:funders)
   end
 
   @doc """
@@ -78,6 +79,7 @@ defmodule Homer.Builders do
     |> Repo.get!(id)
     |> Repo.preload(:steps)
     |> Repo.preload(:investors)
+    |> Repo.preload(:funders)
   end
 
   @doc """
@@ -99,7 +101,7 @@ defmodule Homer.Builders do
 
     case project do
       {:ok, instance} ->
-        instance = %{instance | steps: [], investors: []}
+        instance = %{instance | steps: [], investors: [], funders: []}
         {:ok, instance}
       _ -> project
     end
