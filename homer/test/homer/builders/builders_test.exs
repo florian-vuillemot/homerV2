@@ -51,6 +51,7 @@ defmodule Homer.BuildersTest do
       assert project.github == nil
       assert project.investors == []
       assert project.funders == []
+      assert project.funding == nil
     end
 
     test "create_project/1 with invalid data returns error changeset" do
@@ -70,6 +71,7 @@ defmodule Homer.BuildersTest do
       assert project.github == "some github"
       assert project.investors == []
       assert project.funders == []
+      assert project.funding == nil
     end
 
     test "update_project/2 with invalid data returns error changeset" do
