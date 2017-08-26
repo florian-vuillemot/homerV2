@@ -11,6 +11,11 @@ defmodule HomerWeb.Monetizations.FundingView do
   end
 
   def render("funding.json", %{funding: funding}) do
+    funding = funding
+              |> get_list_id(:invests_allows)
+              |> get_list_id(:step_templates)
+              |> get_list_id(:projects)
+
     %{id: funding.id,
       name: funding.name,
       description: funding.description,
@@ -22,5 +27,15 @@ defmodule HomerWeb.Monetizations.FundingView do
       projects: funding.projects,
       step_templates: funding.step_templates,
       invests_allows: funding.invests_allows}
+  end
+
+  defp get_list_id(data, key) do
+    list_id = Enum.map(
+      Map.get(data, key),
+      fn invest ->
+        invest.id
+      end
+    )
+    Map.replace(data, key, list_id)
   end
 end

@@ -58,12 +58,12 @@ defmodule Homer.InvestsAllows do
   def create_invest_allow(attrs \\ %{}) do
     invest = %InvestAllow{:create_at => Ecto.DateTime.utc}
     |> InvestAllow.changeset(attrs)
-    |> Repo.insert()
+    |> Repo.insert
 
 
     case invest do
       {:ok, instance} ->
-        instance = %{instance | investors: []}
+        instance = instance |> Repo.preload(:investors)
         {:ok, instance}
       _ -> invest
     end

@@ -20,9 +20,7 @@ defmodule Homer.Monetizations do
   def list_fundings do
     Funding
     |> Repo.all
-    |> Repo.preload(:projects)
-    |> Repo.preload(:step_templates)
-    |> Repo.preload(:invests_allows)
+    |> preload_monetizations
   end
 
   @doc """
@@ -42,9 +40,7 @@ defmodule Homer.Monetizations do
   def get_funding!(id) do
     Funding
     |> Repo.get!(id)
-    |> Repo.preload(:projects)
-    |> Repo.preload(:step_templates)
-    |> Repo.preload(:invests_allows)
+    |> preload_monetizations
   end
 
   @doc """
@@ -62,13 +58,12 @@ defmodule Homer.Monetizations do
   """
   def create_funding(attrs \\ %{}) do
     funding = %Funding{create: Ecto.DateTime.utc}
-    |> Funding.changeset(attrs)
-    |> Repo.insert()
+              |> Funding.changeset(attrs)
+              |> Repo.insert
 
     case funding do
       {:ok, instance} ->
-        instance = %{instance | projects: [], step_templates: [], invests_allows: []}
-        {:ok, instance}
+        {:ok, preload_monetizations(instance)}
       _ -> funding
     end
   end
@@ -86,9 +81,18 @@ defmodule Homer.Monetizations do
 
   """
   def update_funding(%Funding{} = funding, attrs) do
-    funding
+    funding = funding
     |> Funding.changeset(attrs)
-    |> Repo.update()
+
+    funding = case funding do
+      {:ok, instance} ->
+        {:ok, preload_monetizations(instance)}
+      _ ->
+        funding
+    end
+
+    funding
+    |> Repo.update
   end
 
   @doc """
@@ -118,5 +122,13 @@ defmodule Homer.Monetizations do
   """
   def change_funding(%Funding{} = funding) do
     Funding.changeset(funding, %{})
+  end
+
+  @doc false
+  defp preload_monetizations(funding) do
+    funding
+    |> Repo.preload(:projects)
+    |> Repo.preload(:step_templates)
+    |> Repo.preload(:invests_allows)
   end
 end

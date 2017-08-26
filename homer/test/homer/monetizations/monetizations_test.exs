@@ -6,7 +6,16 @@ defmodule Homer.MonetizationsTest do
   describe "fundings" do
     alias Homer.Monetizations.Funding
 
-    @valid_attrs %{description: "some description", name: "some name", unit: "some unit", days: 10, validate: 80}
+    @valid_attrs %{description: "some description", name: "some name", unit: "some unit", days: 10, validate: 80,
+      invests_allows: [
+        %{description: "some description for funding", invest: 42, name: "some name for funding"},
+        %{description: "again some description for funding", invest: 42, name: "again some name for funding"}
+      ],
+      step_templates: [
+        %{description: "some description", name: "some name", rank: 42},
+        %{description: "again some description", name: "again some name", rank: 42}
+      ]
+    }
     @update_attrs %{description: "some updated description", name: "some updated name", unit: "some updated unit", days: 15, validate: 85}
     @invalid_attrs %{description: nil, name: nil, unit: nil, days: nil, validate: nil}
     @invalid_attrs_create [%{description: nil, name: "name", unit: "unit", days: 10, validate: 80},
@@ -56,8 +65,8 @@ defmodule Homer.MonetizationsTest do
       assert funding.days == 10
       assert funding.validate == 80
       assert funding.projects == []
-      assert funding.step_templates == []
-      assert funding.invests_allows == []
+      test_length(funding.step_templates, 2)
+      test_length(funding.invests_allows, 2)
     end
 
     test "create_funding/1 with invalid data returns error changeset" do
@@ -78,9 +87,9 @@ defmodule Homer.MonetizationsTest do
       assert funding.valid == false
       assert funding.days == 15
       assert funding.validate == 85
-      assert funding.projects == []
-      assert funding.step_templates == []
-      assert funding.invests_allows == []
+      assert funding.projects == init_funding.projects
+      test_length(init_funding.step_templates, funding.step_templates)
+      test_length(init_funding.invests_allows, funding.invests_allows)
     end
 
     test "update_funding/2 with invalid data returns error changeset" do
@@ -103,5 +112,21 @@ defmodule Homer.MonetizationsTest do
       funding = funding_fixture()
       assert %Ecto.Changeset{} = Monetizations.change_funding(funding)
     end
+  end
+
+  #############################################################################################
+  #############################################################################################
+  #############################################################################################
+  #############################################################################################
+
+  defp test_length(list_1, list_2) when is_list(list_2) do
+    v1 = length list_1
+    v2 = length list_2
+    assert v1 == v2
+  end
+
+  defp test_length(list_1, nb) when is_integer(nb) do
+    v1 = length list_1
+    assert v1 == nb
   end
 end
