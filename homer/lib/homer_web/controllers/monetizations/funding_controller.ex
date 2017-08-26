@@ -13,7 +13,6 @@ defmodule HomerWeb.Monetizations.FundingController do
 
   def create(conn, %{"funding" => funding_params}) do
     with {:ok, %Funding{} = funding} <- Monetizations.create_funding(funding_params) do
-    invest = funding.invests_allows
       conn
       |> put_status(:created)
       |> put_resp_header("location", monetizations_funding_path(conn, :show, funding))
