@@ -28,8 +28,9 @@ defmodule Homer.Builders.Project do
   @doc false
   def changeset(%Project{} = project, attrs) do
     project
-    |> cast(attrs, [:name, :description, :to_raise, :github])
-    |> validate_required([:name, :description, :to_raise])
+    |> cast(attrs, [:name, :description, :to_raise, :github, :funding_id])
+    |> validate_required([:name, :description, :to_raise, :funding_id])
     |> unique_constraint(:name)
+    |> foreign_key_constraint(:funding_id)
   end
 end

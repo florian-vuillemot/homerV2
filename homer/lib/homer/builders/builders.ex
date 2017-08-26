@@ -55,9 +55,7 @@ defmodule Homer.Builders do
   def list_projects do
     Project
     |> Repo.all
-    |> Repo.preload(:steps)
-    |> Repo.preload(:investors)
-    |> Repo.preload(:funders)
+    |> preload_project
   end
 
   @doc """
@@ -77,9 +75,7 @@ defmodule Homer.Builders do
   def get_project!(id) do
     Project
     |> Repo.get!(id)
-    |> Repo.preload(:steps)
-    |> Repo.preload(:investors)
-    |> Repo.preload(:funders)
+    |> preload_project
   end
 
   @doc """
@@ -96,16 +92,19 @@ defmodule Homer.Builders do
   """
   def create_project(attrs \\ %{}) do
     project = %Project{create_at: Ecto.DateTime.utc, status: status_projects(:create)}
-    |> Project.changeset(attrs)
-    |> Repo.insert()
+              |> Project.changeset(attrs)
+              |> Repo.insert
 
     case project do
       {:ok, instance} ->
-        instance = %{instance | steps: [], investors: [], funders: []}
+        instance = instance
+                   |> preload_project
         {:ok, instance}
-      _ -> project
+      _ ->
+        project
     end
   end
+
 
   @doc """
   Updates a project.
@@ -120,6 +119,15 @@ defmodule Homer.Builders do
 
   """
   def update_project(%Project{} = project, attrs) do
+    init_project = get_project!(project.id)
+
+    attrs = case init_project.funding_id == Map.get(attrs, :funding_id) do
+      true ->
+        attrs
+      _ ->
+        %{funding_id: nil}
+    end
+
     project
     |> Project.changeset(attrs)
     |> Repo.update()
@@ -152,5 +160,13 @@ defmodule Homer.Builders do
   """
   def change_project(%Project{} = project) do
     Project.changeset(project, %{})
+  end
+
+  defp preload_project(project) do
+    project
+    |> Repo.preload(:steps)
+    |> Repo.preload(:investors)
+    |> Repo.preload(:funders)
+    |> Repo.preload(:funding)
   end
 end
