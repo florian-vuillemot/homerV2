@@ -121,6 +121,7 @@ defmodule Homer.Builders do
   def update_project(%Project{} = project, attrs) do
     init_project = get_project!(project.id)
 
+    # Not allow change funding references after init.
     attrs = case init_project.funding_id == Map.get(attrs, :funding_id) do
       true ->
         attrs
