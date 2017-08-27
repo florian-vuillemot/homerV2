@@ -10,7 +10,12 @@ defmodule Homer.BuildersTest do
     @update_attrs %{name: "some update name", description: "some updated description", to_raise: 43, github: "some github"}
     @invalid_attrs %{name: nil, description: nil, to_raise: nil}
 
-    def project_fixture(attrs \\ %{}) do
+    def project_fixture(attrs \\ %{}, new_name \\ false) do
+      attrs = case new_name do
+        true -> Map.put(attrs, :name, "#{Enum.random(0..4242)}")
+        _ -> attrs
+      end
+
       {:ok, project} =
         Enum.into(attrs, get_valid_attrs())
         |> Builders.create_project()
