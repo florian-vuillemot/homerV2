@@ -56,6 +56,12 @@ defmodule Homer.BuildersTest do
       assert {:error, %Ecto.Changeset{}} = Builders.create_project(get_valid_attrs(@invalid_attrs))
     end
 
+    test "create_project/1 with invalid funding ref in step returns error changeset" do
+      attrs = get_valid_attrs(@valid_attrs)
+      attrs = Map.put(attrs, :funding_id, attrs.funding_id - 1)
+      assert {:error, %Ecto.Changeset{}} = Builders.create_project(attrs)
+    end
+
     test "update_project/2 with valid data updates the project" do
       init_project = project_fixture()
       project_attr = %{get_valid_attrs(@update_attrs) | funding_id: init_project.funding_id}

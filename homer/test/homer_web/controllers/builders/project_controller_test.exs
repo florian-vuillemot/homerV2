@@ -63,6 +63,14 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
       conn = post conn, builders_project_path(conn, :create), project: create_attrs(@invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
+
+    test "renders errors when funding_id of step is invalid", %{conn: conn} do
+      attrs = create_attrs()
+      attrs = Map.put(attrs, :funding_id, attrs.funding_id - 1)
+      conn = post conn, builders_project_path(conn, :create), project: attrs
+      assert json_response(conn, 422)["errors"] != %{}
+    end
+
   end
 
   describe "update project" do
