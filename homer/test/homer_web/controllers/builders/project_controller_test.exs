@@ -4,7 +4,11 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
   alias Homer.Builders
   alias Homer.Builders.Project
 
-  @create_attrs %{name: "some name", description: "some description", to_raise: 42}
+  @create_attrs %{name: "some name", description: "some description", to_raise: 42,
+    steps: [
+      %{}
+    ]
+  }
   @update_attrs %{name: "some updated name", description: "some updated description", to_raise: 43, github: "some github"}
   @invalid_attrs %{name: nil, description: nil, to_raise: nil}
 
@@ -35,17 +39,23 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
       assert %{"id" => id} = json_response(conn, 201)["project"]
 
       conn = get conn, builders_project_path(conn, :show, id)
-      assert json_response(conn, 200)["project"] == %{
+      response = json_response(conn, 200)["project"]
+
+      Homer.ModelUtilitiesTest.test_lengths(response, [
+        {"steps", 1}, {"investors", 0}, {"funders", 0}
+      ])
+
+      assert response == %{
         "id" => id,
         "name" => "some name",
         "create_at" => "#{Ecto.DateTime.to_iso8601(Ecto.DateTime.utc)}.000000Z",
         "description" => "some description",
         "status" => Homer.Builders.status_projects(:create),
         "to_raise" => 42,
-        "steps" => [],
+        "steps" => Map.get(response, "steps"),
         "github" => nil,
-        "investors" => [],
-        "funders" => []}
+        "investors" => Map.get(response, "investors"),
+        "funders" => Map.get(response, "funders")}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -64,17 +74,21 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
       assert json_response(conn, 422)["errors"] != %{}
 
       conn = get conn, builders_project_path(conn, :show, id)
-      assert json_response(conn, 200)["project"] == %{
+      update_project = json_response(conn, 200)["project"]
+
+      project = Homer.ControllerUtilitiesTest.convert_fk(project, [:steps, :investors, :funders])
+#IO.inspect project
+      assert update_project == %{
         "id" => id,
         "name" => "some name",
         "create_at" => "#{Ecto.DateTime.to_iso8601(create_at)}.000000Z",
         "description" => "some description",
         "status" => Homer.Builders.status_projects(:create),
         "to_raise" => 42,
-        "steps" => [],
+        "steps" => project.steps,
         "github" => nil,
-        "investors" => [],
-        "funders" => []}
+        "investors" => project.investors,
+        "funders" => project.funders}
     end
 
     test "renders errors when data is invalid", %{conn: conn, project: project} do

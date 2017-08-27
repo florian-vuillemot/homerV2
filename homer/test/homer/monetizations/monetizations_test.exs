@@ -65,8 +65,8 @@ defmodule Homer.MonetizationsTest do
       assert funding.days == 10
       assert funding.validate == 80
       assert funding.projects == []
-      test_length(funding.step_templates, 2)
-      test_length(funding.invests_allows, 2)
+      Homer.ModelUtilitiesTest.test_length(funding.step_templates, 2)
+      Homer.ModelUtilitiesTest.test_length(funding.invests_allows, 2)
     end
 
     test "create_funding/1 with invalid data returns error changeset" do
@@ -88,8 +88,8 @@ defmodule Homer.MonetizationsTest do
       assert funding.days == 15
       assert funding.validate == 85
       assert funding.projects == init_funding.projects
-      test_length(init_funding.step_templates, funding.step_templates)
-      test_length(init_funding.invests_allows, funding.invests_allows)
+      Homer.ModelUtilitiesTest.test_length(init_funding.step_templates, funding.step_templates)
+      Homer.ModelUtilitiesTest.test_length(init_funding.invests_allows, funding.invests_allows)
     end
 
     test "update_funding/2 with invalid data returns error changeset" do
@@ -112,21 +112,5 @@ defmodule Homer.MonetizationsTest do
       funding = funding_fixture()
       assert %Ecto.Changeset{} = Monetizations.change_funding(funding)
     end
-  end
-
-  #############################################################################################
-  #############################################################################################
-  #############################################################################################
-  #############################################################################################
-
-  defp test_length(list_1, list_2) when is_list(list_2) do
-    v1 = length list_1
-    v2 = length list_2
-    assert v1 == v2
-  end
-
-  defp test_length(list_1, nb) when is_integer(nb) do
-    v1 = length list_1
-    assert v1 == nb
   end
 end
