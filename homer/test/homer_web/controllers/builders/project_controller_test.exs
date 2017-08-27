@@ -4,21 +4,26 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
   alias Homer.Builders
   alias Homer.Builders.Project
 
-  @create_attrs %{name: "some name", description: "some description", to_raise: 42,
-    steps: [
-      %{}
-    ]
-  }
+  @create_attrs %{name: "some name", description: "some description", to_raise: 42}
   @update_attrs %{name: "some updated name", description: "some updated description", to_raise: 43, github: "some github"}
   @invalid_attrs %{name: nil, description: nil, to_raise: nil}
 
-  def fixture(:project) do
+  def create_attrs(attrs \\ @create_attrs) do
     funding = Homer.MonetizationsTest.funding_fixture
 
-    {:ok, project} =
-      Map.put(@create_attrs, :funding_id, funding.id)
-      |> Builders.create_project()
+    steps = Enum.map(
+      funding.step_templates,
+      fn step_template -> %{step_template_id: step_template.id} end
+    )
 
+    attrs
+    |> Map.put(:steps, steps)
+    |> Map.put(:funding_id, funding.id)
+  end
+
+  def fixture(:project) do
+    {:ok, project} = Builders.create_project(create_attrs())
+    
     project
   end
 
@@ -35,15 +40,11 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
 
   describe "create project" do
     test "renders project when data is valid", %{conn: conn} do
-      conn = post conn, builders_project_path(conn, :create), project: get_valid_attrs(conn, @create_attrs)
+      conn = post conn, builders_project_path(conn, :create), project: create_attrs()
       assert %{"id" => id} = json_response(conn, 201)["project"]
 
       conn = get conn, builders_project_path(conn, :show, id)
       response = json_response(conn, 200)["project"]
-
-      Homer.ModelUtilitiesTest.test_lengths(response, [
-        {"steps", 1}, {"investors", 0}, {"funders", 0}
-      ])
 
       assert response == %{
         "id" => id,
@@ -59,7 +60,7 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post conn, builders_project_path(conn, :create), project: get_valid_attrs(conn, @invalid_attrs)
+      conn = post conn, builders_project_path(conn, :create), project: create_attrs(@invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
@@ -68,8 +69,7 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
     setup [:create_project]
 
     test "renders project when data is valid", %{conn: conn, project: %Project{id: id, create_at: create_at, funding_id: funding_id} = project} do
-      project_attrs = Map.put(@update_attrs, :funding_id, funding_id)
-      #IO.inspect(project_attrs)
+      project_attrs = Map.put(create_attrs(@update_attrs), :funding_id, funding_id)
       conn = put conn, builders_project_path(conn, :update, project), project: project_attrs
       assert json_response(conn, 422)["errors"] != %{}
 
@@ -77,7 +77,7 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
       update_project = json_response(conn, 200)["project"]
 
       project = Homer.ControllerUtilitiesTest.convert_fk(project, [:steps, :investors, :funders])
-#IO.inspect project
+
       assert update_project == %{
         "id" => id,
         "name" => "some name",
@@ -92,7 +92,7 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, project: project} do
-      conn = put conn, builders_project_path(conn, :update, project), project: get_valid_attrs(conn, @invalid_attrs)
+      conn = put conn, builders_project_path(conn, :update, project), project: create_attrs(@invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
@@ -112,13 +112,5 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
   defp create_project(_) do
     project = fixture(:project)
     {:ok, project: project}
-  end
-
-  defp get_valid_attrs(conn, attrs) do
-    funding_attrs = %{description: "some description", name: "some name", unit: "some unit", days: 10, validate: 80}
-    conn = post conn, monetizations_funding_path(conn, :create), funding: funding_attrs
-    assert %{"id" => id} = json_response(conn, 201)["funding"]
-
-    Map.put(attrs, :funding_id, id)
   end
 end

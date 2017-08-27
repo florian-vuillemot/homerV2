@@ -6,17 +6,13 @@ defmodule Homer.BuildersTest do
   describe "projects" do
     alias Homer.Builders.Project
 
-    @valid_attrs %{name: "some name", description: "some description", to_raise: 42, funding_id: 1}
-    @update_attrs %{name: "some update name", description: "some updated description", to_raise: 43, github: "some github", funding_id: 1}
+    @valid_attrs %{name: "some name", description: "some description", to_raise: 42}
+    @update_attrs %{name: "some update name", description: "some updated description", to_raise: 43, github: "some github"}
     @invalid_attrs %{name: nil, description: nil, to_raise: nil}
 
     def project_fixture(attrs \\ %{}) do
-      funding = Homer.MonetizationsTest.funding_fixture
-
       {:ok, project} =
-        attrs
-        |> Enum.into(@valid_attrs)
-        |> Map.put(:funding_id, funding.id)
+        Enum.into(attrs, get_valid_attrs())
         |> Builders.create_project()
 
       project
@@ -108,11 +104,18 @@ defmodule Homer.BuildersTest do
       project = %{init_project | create_at: "#{Ecto.DateTime.to_iso8601(init_project.create_at)}.000000Z", status: init_project.status}
       assert project == update_project
     end
-  end
 
-  defp get_valid_attrs(attrs) do
-    funding = Homer.MonetizationsTest.funding_fixture
+    defp get_valid_attrs(attrs \\ @valid_attrs) do
+      funding = Homer.MonetizationsTest.funding_fixture
 
-    Map.put(attrs, :funding_id, funding.id)
+      steps = Enum.map(
+        funding.step_templates,
+        fn step_template -> %{step_template_id: step_template.id} end
+      )
+
+      attrs
+      |> Map.put(:steps, steps)
+      |> Map.put(:funding_id, funding.id)
+    end
   end
 end

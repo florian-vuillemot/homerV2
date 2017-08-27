@@ -32,6 +32,5 @@ defmodule Homer.Builders.Project do
     |> validate_required([:name, :description, :to_raise, :funding_id])
     |> unique_constraint(:name)
     |> foreign_key_constraint(:funding_id)
-    |> cast_assoc(:steps)
   end
 end
