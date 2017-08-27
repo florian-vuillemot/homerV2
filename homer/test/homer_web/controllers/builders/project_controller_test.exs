@@ -23,7 +23,7 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
 
   def fixture(:project) do
     {:ok, project} = Builders.create_project(create_attrs())
-    
+
     project
   end
 

@@ -91,7 +91,12 @@ defmodule Homer.Builders do
 
   """
   def create_project(attrs \\ %{}) do
-    steps = create_steps(attrs)
+    funding_id = case Map.has_key?(attrs, :funding_id) do
+      true -> Map.get(attrs, :funding_id)
+      _ -> Map.get(attrs, "funding_id")
+    end
+
+    steps = create_steps(attrs, funding_id)
 
     project = case steps do
       nil -> {:error, %Ecto.Changeset{}}
@@ -102,20 +107,17 @@ defmodule Homer.Builders do
 
     case project do
       {:ok, instance_project} -> Enum.map(steps,
-                fn step ->
-                  {:ok, step} = step
-                  step = Map.put(step, :project_id, instance_project.id)
-                  Homer.Steps.update_step(step, %{})
-                end
-      )
-      _ -> nil
-    end
-
-    case project do
-      {:ok, instance} ->
-        instance = instance |> preload_project
-        {:ok, instance}
+          fn step ->
+            {:ok, step} = step
+            step = Map.put(step, :project_id, instance_project.id)
+            Homer.Steps.update_step(step, %{})
+          end
+        )
+        {:ok, preload_project(instance_project)}
       _ ->
+        if steps != nil do
+          delete_steps(steps)
+        end
         project
     end
   end
@@ -186,20 +188,27 @@ defmodule Homer.Builders do
     |> Repo.preload(:funding)
   end
 
-  defp create_steps(attrs) do
+  defp create_steps(_, nil), do: nil
+  defp create_steps(attrs, funding_id) do
     attrs_step = case Map.has_key?(attrs, "steps") do
-      true  -> Map.get(attrs, "steps")
-      _     -> Map.get(attrs, :steps)
+      true -> Map.get(attrs, "steps")
+      _ -> Map.get(attrs, :steps)
     end
 
     case attrs_step do
       nil -> nil
-      _ ->
-        steps = Enum.map(attrs_step, fn step -> Homer.Steps.create_step(step) end)
+      _   ->
+        case check_same_funding_id(attrs_step, funding_id) do
+          true ->
+            steps = Enum.map(attrs_step, fn step -> Homer.Steps.create_step(step) end)
 
-        case Enum.any?(steps, fn x -> Homer.Utilities.Constructor.error_on_create(x) end) do
-          false -> steps
-          _     -> nil
+            case Enum.any?(steps, fn x -> Homer.Utilities.Constructor.error_on_create(x) end) do
+              false ->  steps
+              _     ->  delete_steps(steps)
+                        nil
+            end
+
+          _ -> nil
         end
     end
   end
@@ -208,5 +217,24 @@ defmodule Homer.Builders do
     %Project{create_at: Ecto.DateTime.utc, status: status_projects(:create)}
     |> Project.changeset(attrs)
     |> Repo.insert
+  end
+
+  defp delete_steps(steps) do
+    Enum.map(steps, fn {_, step} ->
+      Homer.Steps.delete_step(step) end)
+  end
+
+  defp check_same_funding_id(attrs_steps, funding_id) do
+    steps = Enum.map(attrs_steps,
+      fn step ->
+        funding = case Map.has_key?(step, "funding_id") do
+          true -> Map.get(step, "funding_id")
+          _ -> Map.get(step, :funding_id)
+        end
+        funding_id != funding
+      end
+    )
+
+    Enum.any?(steps)
   end
 end
