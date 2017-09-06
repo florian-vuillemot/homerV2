@@ -17,6 +17,7 @@ defmodule Homer.FundersTest do
       {:ok, funder} =
         attrs
         |> Enum.into(@valid_attrs)
+        |> Enum.into(get_valid_attrs())
         |> Funders.create_funder()
 
       funder
@@ -81,6 +82,15 @@ defmodule Homer.FundersTest do
         @invalid_status_funder,
         fn status -> assert true != Funders.is_status_funder?(status) end
       )
+    end
+
+    defp get_valid_attrs(attrs \\ @valid_attrs) do
+      user = Homer.AccountsTest.user_fixture(%{}, true)
+      project = Homer.BuildersTest.project_fixture(%{}, true)
+
+      attrs
+      |> Map.put(:user_id, user.id)
+      |> Map.put(:project_id, project.id)
     end
   end
 end
