@@ -66,8 +66,7 @@ defmodule Homer.Funders do
   def get_funder!(id) do
     Funder
     |> Repo.get!(id)
-    |> Repo.preload(:project)
-    |> Repo.preload(:user)
+    |> preload_funder
   end
 
   @doc """
@@ -87,17 +86,16 @@ defmodule Homer.Funders do
     funder =
       case attrs do
         %{status: status}
-          -> check_funder_status(attrs, status)
+          -> insert_funder(attrs, status)
         %{"status" => status}
-          -> check_funder_status(attrs, status)
+          -> insert_funder(attrs, status)
         _
-          -> check_funder_status(nil, nil)
+          -> insert_funder(nil, nil)
       end
 
     case funder do
       {:ok, instance} ->
-        instance = %{instance | user: nil, project: nil}
-        {:ok, instance}
+        {:ok, preload_funder(instance)}
       _ -> funder
     end
   end
@@ -119,11 +117,11 @@ defmodule Homer.Funders do
   def update_funder(%Funder{} = funder, attrs) do
     case attrs do
       %{status: status}
-        -> check_funder_status(attrs, status, funder)
+        -> insert_funder(attrs, status, funder)
       %{"status" => status}
-        -> check_funder_status(attrs, status, funder)
+        -> insert_funder(attrs, status, funder)
       _
-        -> check_funder_status(nil, nil, funder)
+        -> insert_funder(nil, nil, funder)
     end
   end
 
@@ -162,15 +160,15 @@ defmodule Homer.Funders do
 ##########################################################################
 
   @doc false
-  defp check_funder_status(attrs, status, funder \\ nil) do
+  defp insert_funder(attrs, status, funder \\ nil) do
     case is_status_funder?(status) do
-      true -> insert_funder(attrs, funder)
-      _    -> insert_funder(%{status: nil}, funder)
+      true -> insert_or_update_funder(attrs, funder)
+      _    -> insert_or_update_funder(%{status: nil}, funder)
     end
   end
 
   @doc false
-  defp insert_funder(attrs, funder) do
+  defp insert_or_update_funder(attrs, funder) do
     case funder do
       nil
         -> %Funder{}
@@ -181,5 +179,12 @@ defmodule Homer.Funders do
            |> Funder.changeset(attrs)
            |> Repo.update()
     end
+  end
+
+  @doc false
+  defp preload_funder(funder) do
+    funder
+    |> Repo.preload(:user)
+    |> Repo.preload(:project)
   end
 end
