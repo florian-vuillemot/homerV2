@@ -50,10 +50,13 @@ defmodule HomerWeb.Funders.FunderControllerTest do
     test "renders errors when fk is invalid", %{conn: conn} do
       funder_attrs = valid_attrs(@create_attrs)
 
-      conn = post conn, funders_funder_path(conn, :create), funder: Map.put(funder_attrs, :user_id, Map.get(funder_attrs, :user_id) -1)
+      bad_user_id = Map.put(funder_attrs, :user_id, Map.get(funder_attrs, :user_id) - 1)
+      bad_project_id = Map.put(funder_attrs, :project_id, Map.get(funder_attrs, :project_id) - 1)
+
+      conn = post conn, funders_funder_path(conn, :create), funder: bad_user_id
       assert json_response(conn, 422)["errors"] != %{}
 
-      conn = post conn, funders_funder_path(conn, :create), funder: Map.put(funder_attrs, :project_id, Map.get(funder_attrs, :project_id) -1)
+      conn = post conn, funders_funder_path(conn, :create), funder: bad_project_id
       assert json_response(conn, 422)["errors"] != %{}
     end
 

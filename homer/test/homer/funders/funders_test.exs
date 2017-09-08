@@ -34,14 +34,23 @@ defmodule Homer.FundersTest do
     end
 
     test "create_funder/1 with valid data creates a funder" do
-      assert {:ok, %Funder{} = funder} = Funders.create_funder(@valid_attrs)
+      assert {:ok, %Funder{} = funder} = Funders.create_funder(get_valid_attrs())
       assert funder.status == "Creator"
-      assert funder.user == nil
-      assert funder.project == nil
+      assert funder.user != nil
+      assert funder.project != nil
     end
 
     test "create_funder/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Funders.create_funder(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Funders.create_funder(get_valid_attrs(@invalid_attrs))
+
+      random_number =  :rand.uniform(100000)
+      attrs = get_valid_attrs(@valid_attrs)
+
+      bad_project = Map.put(attrs, :project_id, random_number)
+      assert {:error, %Ecto.Changeset{}} = Funders.create_funder(bad_project)
+
+      bad_user = Map.put(attrs, :user_id, random_number)
+      assert {:error, %Ecto.Changeset{}} = Funders.create_funder(bad_user)
     end
 
     test "update_funder/2 with valid data updates the funder" do
@@ -49,8 +58,8 @@ defmodule Homer.FundersTest do
       assert {:ok, funder} = Funders.update_funder(funder, @update_attrs)
       assert %Funder{} = funder
       assert funder.status == "Worker"
-      assert funder.user == nil
-      assert funder.project == nil
+      assert funder.user != nil
+      assert funder.project != nil
     end
 
     test "update_funder/2 with invalid data returns error changeset" do
