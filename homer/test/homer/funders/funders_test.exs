@@ -66,6 +66,16 @@ defmodule Homer.FundersTest do
       funder = funder_fixture()
       assert {:error, %Ecto.Changeset{}} = Funders.update_funder(funder, @invalid_attrs)
       assert funder == Funders.get_funder!(funder.id)
+
+      other_funder = funder_fixture() # Other funder with other user and project
+      funder_with_new_user = Map.put(@update_attrs, :user_id, Map.get(other_funder, :user_id))
+      funder_with_new_project = Map.put(@update_attrs, :project_id, Map.get(other_funder, :project_id))
+
+      assert {:error, %Ecto.Changeset{}} = Funders.update_funder(funder, funder_with_new_user)
+      assert funder == Funders.get_funder!(funder.id)
+
+      assert {:error, %Ecto.Changeset{}} = Funders.update_funder(funder, funder_with_new_project)
+      assert funder == Funders.get_funder!(funder.id)
     end
 
     test "delete_funder/1 deletes the funder" do

@@ -114,6 +114,8 @@ defmodule Homer.Funders do
 
   """
   def update_funder(%Funder{} = funder, attrs) do
+
+
     case attrs do
       %{status: status}
         -> insert_funder(attrs, status, funder)
