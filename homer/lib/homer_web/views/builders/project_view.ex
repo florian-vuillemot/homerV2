@@ -12,9 +12,9 @@ defmodule HomerWeb.Builders.ProjectView do
 
   def render("project.json", %{project: project}) do
     project = project
-              |> Homer.ViewsConverter.get_list_id(:steps)
-              |> Homer.ViewsConverter.get_list_id(:investors)
-              |> Homer.ViewsConverter.get_list_id(:funders)
+              |> Homer.ViewsConverter.get_id(:steps)
+              |> Homer.ViewsConverter.get_id(:investors)
+              |> Homer.ViewsConverter.get_id(:funders)
 
     %{id: project.id,
       name: project.name,

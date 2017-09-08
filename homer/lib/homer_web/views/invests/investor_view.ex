@@ -12,7 +12,7 @@ defmodule HomerWeb.Invests.InvestorView do
 
   def render("investor.json", %{investor: investor}) do
     investor = investor
-             |> Homer.ViewsConverter.get_list_id(:steps_validation)
+             |> Homer.ViewsConverter.get_id(:steps_validation)
 
     %{id: investor.id,
       comment: investor.comment,
