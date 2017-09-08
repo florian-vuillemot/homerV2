@@ -45,8 +45,7 @@ defmodule Homer.Funders do
   def list_funders do
     Funder
     |> Repo.all
-    |> Repo.preload(:project)
-    |> Repo.preload(:user)
+    |> preload_funder
   end
 
   @doc """

@@ -12,9 +12,9 @@ defmodule HomerWeb.Monetizations.FundingView do
 
   def render("funding.json", %{funding: funding}) do
     funding = funding
-              |> Homer.ViewsConverter.get_list_id(:invests_allows)
-              |> Homer.ViewsConverter.get_list_id(:step_templates)
-              |> Homer.ViewsConverter.get_list_id(:projects)
+              |> Homer.ViewsConverter.get_id(:invests_allows)
+              |> Homer.ViewsConverter.get_id(:step_templates)
+              |> Homer.ViewsConverter.get_id(:projects)
 
     %{id: funding.id,
       name: funding.name,
