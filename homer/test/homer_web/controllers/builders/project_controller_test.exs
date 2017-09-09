@@ -77,6 +77,14 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
       assert json_response(conn, 422)["errors"] != %{}
     end
 
+    test "renders errors when step are not in number", %{conn: conn} do
+      attrs = create_attrs()
+      {_, steps} = Map.get(attrs, :steps) |> List.pop_at(0)
+      attrs = Map.put(attrs, :steps, steps)
+      conn = post conn, builders_project_path(conn, :create), project: attrs
+      assert json_response(conn, 422)["errors"] != %{}
+    end
+
   end
 
   describe "update project" do
