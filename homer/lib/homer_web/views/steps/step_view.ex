@@ -3,11 +3,11 @@ defmodule HomerWeb.Steps.StepView do
   alias HomerWeb.Steps.StepView
 
   def render("index.json", %{steps: steps}) do
-    %{data: render_many(steps, StepView, "step.json")}
+    %{steps: render_many(steps, StepView, "step.json")}
   end
 
   def render("show.json", %{step: step}) do
-    %{data: render_one(step, StepView, "step.json")}
+    %{step: render_one(step, StepView, "step.json")}
   end
 
   def render("step.json", %{step: step}) do
