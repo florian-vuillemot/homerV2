@@ -99,7 +99,7 @@ defmodule Homer.Builders do
     steps = create_steps(attrs, funding_id)
 
     project = case steps do
-      nil -> {:error, %Ecto.Changeset{}}
+      nil -> build_project(%{})
       _   ->
         {_, attrs} = Map.pop(attrs, :steps)
         build_project(attrs)
@@ -198,7 +198,7 @@ defmodule Homer.Builders do
     case attrs_step do
       nil -> nil
       _   ->
-        case check_same_funding_id(attrs_step, funding_id) do
+        case check_same_funding_id(attrs_step, funding_id) and check_same_number_of_steps(attrs_step, funding_id) do
           true ->
             steps = Enum.map(attrs_step, fn step -> Homer.Steps.create_step(step) end)
 
@@ -236,5 +236,13 @@ defmodule Homer.Builders do
     )
 
     Enum.any?(steps)
+  end
+
+  defp check_same_number_of_steps(attrs_step, funding_id) do
+    query = from step in "step_templates",
+                 where: step.funding_id == ^funding_id,
+                 select: count(step.id)
+
+    length(attrs_step) === List.first(Repo.all(query))
   end
 end
