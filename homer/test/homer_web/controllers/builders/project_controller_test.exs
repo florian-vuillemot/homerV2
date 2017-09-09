@@ -91,7 +91,7 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
         "create_at" => "#{Ecto.DateTime.to_iso8601(create_at)}.000000Z",
         "description" => "some description",
         "status" => Homer.Builders.status_projects(:create),
-        "to_raise" => 42,
+        "to_raise" => 43,
         "steps" => project.steps,
         "github" => nil,
         "investors" => project.investors,
