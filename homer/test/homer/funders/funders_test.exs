@@ -54,12 +54,13 @@ defmodule Homer.FundersTest do
     end
 
     test "update_funder/2 with valid data updates the funder" do
-      funder = funder_fixture()
-      assert {:ok, funder} = Funders.update_funder(funder, @update_attrs)
+      initial_funder = funder_fixture()
+      attrs = get_valid_attrs(@update_attrs, initial_funder)
+      assert {:ok, funder} = Funders.update_funder(initial_funder, attrs)
       assert %Funder{} = funder
       assert funder.status == "Worker"
-      assert funder.user != nil
-      assert funder.project != nil
+      assert funder.user != initial_funder.user_id
+      assert funder.project != initial_funder.project_id
     end
 
     test "update_funder/2 with invalid data returns error changeset" do
@@ -103,13 +104,20 @@ defmodule Homer.FundersTest do
       )
     end
 
-    defp get_valid_attrs(attrs \\ @valid_attrs) do
-      user = Homer.AccountsTest.user_fixture(%{}, true)
-      project = Homer.BuildersTest.project_fixture(%{}, true)
+    defp get_valid_attrs(attrs \\ @valid_attrs, funder \\ nil) do
+      case nil !== funder do
+        true ->
+          attrs
+          |> Map.put(:user_id, funder.user_id)
+          |> Map.put(:project_id, funder.project_id)
+        _ ->
+          user = Homer.AccountsTest.user_fixture(%{}, true)
+          project = Homer.BuildersTest.project_fixture(%{}, true)
 
-      attrs
-      |> Map.put(:user_id, user.id)
-      |> Map.put(:project_id, project.id)
+          attrs
+          |> Map.put(:user_id, user.id)
+          |> Map.put(:project_id, project.id)
+      end
     end
   end
 end

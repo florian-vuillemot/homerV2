@@ -114,7 +114,15 @@ defmodule Homer.Funders do
 
   """
   def update_funder(%Funder{} = funder, attrs) do
+    init_funder = get_funder!(funder.id)
 
+    # Not allow change user and project references after init.
+    attrs = case Homer.Utilities.Constructor.same_fk(init_funder, attrs, [:user_id, :project_id])  do
+      true ->
+        attrs
+      _ ->
+        nil
+    end
 
     case attrs do
       %{status: status}

@@ -66,7 +66,7 @@ defmodule HomerWeb.Funders.FunderControllerTest do
     setup [:create_funder]
 
     test "renders funder when data is valid", %{conn: conn, funder: %Funder{id: id} = funder} do
-      conn = put conn, funders_funder_path(conn, :update, funder), funder: valid_attrs(@update_attrs)
+      conn = put conn, funders_funder_path(conn, :update, funder), funder: valid_attrs(@update_attrs, funder)
       assert %{"id" => ^id} = json_response(conn, 200)["funder"]
 
       conn = get conn, funders_funder_path(conn, :show, id)
@@ -105,14 +105,18 @@ defmodule HomerWeb.Funders.FunderControllerTest do
     {:ok, funder: funder}
   end
 
-  defp valid_attrs(attrs \\ @create_attrs) do
-    project = Homer.BuildersTest.project_fixture(%{}, true)
-    user = Homer.AccountsTest.user_fixture(%{}, true)
-
-    attrs = attrs
-            |> Map.put(:project_id, project.id)
-            |> Map.put(:user_id, user.id)
-
-    attrs
+  defp valid_attrs(attrs \\ @create_attrs, funder \\ nil) do
+    case nil !== funder do
+      true ->
+        attrs
+          |> Map.put(:project_id, funder.project_id)
+          |> Map.put(:user_id, funder.user_id)
+      _ ->
+        project = Homer.BuildersTest.project_fixture(%{}, true)
+        user = Homer.AccountsTest.user_fixture(%{}, true)
+        attrs
+          |> Map.put(:project_id, project.id)
+          |> Map.put(:user_id, user.id)
+    end
   end
 end
