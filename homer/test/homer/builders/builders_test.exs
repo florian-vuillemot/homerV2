@@ -123,7 +123,7 @@ defmodule Homer.BuildersTest do
 
       steps = Enum.map(
         funding.step_templates,
-        fn step_template -> %{step_template_id: step_template.id} end
+        fn step_template -> HomerWeb.Steps.StepControllerTest.get_create_attrs(%{step_template_id: step_template.id}) end
       )
 
       attrs

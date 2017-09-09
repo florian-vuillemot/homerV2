@@ -6,14 +6,14 @@ defmodule Homer.StepsTest do
   describe "steps" do
     alias Homer.Steps.Step
 
-    @valid_attrs %{}
-    @update_attrs %{}
+    @valid_attrs %{name: "some name", description: "some description"}
+    @update_attrs %{name: "some new name", description: "some new description"}
     #@invalid_attrs %{}
 
     def step_fixture(attrs \\ %{}) do
       {:ok, step} =
         attrs
-        |> Enum.into(@valid_attrs)
+        |> Enum.into(get_valid_attrs())
         |> Steps.create_step()
 
       step
@@ -42,7 +42,7 @@ defmodule Homer.StepsTest do
     end
 
     test "create_step/1 with valid data creates a step" do
-      assert {:ok, %Step{} = step} = Steps.create_step(@valid_attrs)
+      assert {:ok, %Step{} = step} = Steps.create_step(get_valid_attrs(@valid_attrs))
       assert Ecto.DateTime.to_iso8601(step.create_at) == Ecto.DateTime.to_iso8601(Ecto.DateTime.utc)
     end
 
@@ -52,7 +52,8 @@ defmodule Homer.StepsTest do
 
     test "update_step/2 with valid data updates the step" do
       step = step_fixture()
-      assert {:ok, step} = Steps.update_step(step, @update_attrs)
+      attrs = Map.put(@update_attrs, :step_template_id, step.step_template_id)
+      assert {:ok, step} = Steps.update_step(step, attrs)
       assert %Step{} = step
       assert Ecto.DateTime.to_iso8601(step.create_at) == Ecto.DateTime.to_iso8601(Ecto.DateTime.utc)
     end
@@ -76,6 +77,17 @@ defmodule Homer.StepsTest do
     test "change_step/1 returns a step changeset" do
       step = step_fixture()
       assert %Ecto.Changeset{} = Steps.change_step(step)
+    end
+
+    def get_valid_attrs(attrs \\ @valid_attrs, step \\ nil) do
+      case nil !== step do
+        true ->
+          Enum.into(attrs, %{step_template_id: step.step_template_id})
+        _ ->
+          step_template = Homer.StepTemplatesTest.step_template_fixture()
+
+          Enum.into(attrs, %{step_template_id: step_template.id})
+      end
     end
   end
 end
