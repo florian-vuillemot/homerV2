@@ -15,6 +15,7 @@ defmodule HomerWeb.Builders.ProjectView do
               |> Homer.ViewsConverter.get_id(:steps)
               |> Homer.ViewsConverter.get_id(:investors)
               |> Homer.ViewsConverter.get_id(:funders)
+              |> Homer.ViewsConverter.get_id(:funding)
 
     %{id: project.id,
       name: project.name,

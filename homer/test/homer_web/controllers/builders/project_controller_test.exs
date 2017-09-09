@@ -46,6 +46,11 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
       conn = get conn, builders_project_path(conn, :show, id)
       response = json_response(conn, 200)["project"]
 
+      Enum.map(
+        ["steps", "investors", "funders", "funding"],
+        fn key -> assert nil !== Map.get(response, key) end
+      )
+
       assert response == %{
         "id" => id,
         "name" => "some name",
@@ -56,7 +61,8 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
         "steps" => Map.get(response, "steps"),
         "github" => nil,
         "investors" => Map.get(response, "investors"),
-        "funders" => Map.get(response, "funders")}
+        "funders" => Map.get(response, "funders"),
+        "funding" => Map.get(response, "funding")}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -83,7 +89,7 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
       conn = get conn, builders_project_path(conn, :show, id)
       update_project = json_response(conn, 200)["project"]
 
-      project = Homer.ControllerUtilitiesTest.convert_fk(project, [:steps, :investors, :funders])
+      project = Homer.ControllerUtilitiesTest.convert_fk(project, [:steps, :investors, :funders, :funding])
 
       assert update_project == %{
         "id" => id,
@@ -91,11 +97,12 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
         "create_at" => "#{Ecto.DateTime.to_iso8601(create_at)}.000000Z",
         "description" => "some description",
         "status" => Homer.Builders.status_projects(:create),
-        "to_raise" => 43,
+        "to_raise" => 42,
         "steps" => project.steps,
         "github" => nil,
         "investors" => project.investors,
-        "funders" => project.funders}
+        "funders" => project.funders,
+        "funding" => project.funding}
     end
 
     test "renders errors when data is invalid", %{conn: conn, project: project} do
