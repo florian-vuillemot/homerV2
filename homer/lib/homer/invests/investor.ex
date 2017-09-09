@@ -25,7 +25,10 @@ defmodule Homer.Invests.Investor do
   @doc false
   def changeset(%Investor{} = investor, attrs) do
     investor
-    |> cast(attrs, [:comment])
-    |> validate_required([:comment])
+    |> cast(attrs, [:comment, :project_id, :user_id, :invest_allow_id])
+    |> validate_required([:comment, :project_id, :user_id, :invest_allow_id])
+    |> foreign_key_constraint(:project_id)
+    |> foreign_key_constraint(:user_id)
+    |> foreign_key_constraint(:invest_allow_id)
   end
 end

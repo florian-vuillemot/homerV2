@@ -11,6 +11,11 @@ defmodule HomerWeb.Builders.ProjectView do
   end
 
   def render("project.json", %{project: project}) do
+    project = project
+              |> Homer.ViewsConverter.get_id(:steps)
+              |> Homer.ViewsConverter.get_id(:investors)
+              |> Homer.ViewsConverter.get_id(:funders)
+
     %{id: project.id,
       name: project.name,
       description: project.description,

@@ -10,7 +10,12 @@ defmodule Homer.AccountsTest do
     @update_attrs %{email: "some updated email", password: "some updated password"}
     @invalid_attrs %{email: nil, password: nil}
 
-    def user_fixture(attrs \\ %{}) do
+    def user_fixture(attrs \\ %{}, new_name \\ false) do
+      attrs = case new_name do
+        true -> Map.put(attrs, :email, "#{Enum.random(0..4242)}")
+        _ -> attrs
+      end
+
       {:ok, user} =
         attrs
         |> Enum.into(@valid_attrs)

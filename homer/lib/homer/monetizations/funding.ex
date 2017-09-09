@@ -28,5 +28,7 @@ defmodule Homer.Monetizations.Funding do
     funding
     |> cast(attrs, [:name, :description, :unit, :days, :validate])
     |> validate_required([:name, :description, :unit, :days, :validate])
+    |> cast_assoc(:invests_allows)
+    |> cast_assoc(:step_templates)
   end
 end

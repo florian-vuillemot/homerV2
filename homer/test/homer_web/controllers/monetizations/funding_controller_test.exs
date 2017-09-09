@@ -4,8 +4,17 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
   alias Homer.Monetizations
   alias Homer.Monetizations.Funding
 
-  @create_attrs %{description: "some description", name: "some name", unit: "some unit", days: 10, validate: 80}
-  @update_attrs %{description: "some updated description", name: "some updated name", unit: "some updated unit", days: 15, validate: 85}
+  @create_attrs %{description: "some description", name: "some name", unit: "some unit", days: 10, validate: 80,
+    invests_allows: [
+      %{description: "some description for funding", invest: 42, name: "some name for funding"},
+      %{description: "again some description for funding", invest: 42, name: "again some name for funding"}
+    ],
+    step_templates: [
+      %{description: "some description", name: "some name", rank: 42},
+      %{description: "again some description", name: "again some name", rank: 42}
+    ]
+  }
+  @update_attrs %{description: "some updated description", name: "some updated name", unit: "some updated unit", days: 15, validate: 85,}
   @invalid_attrs %{description: nil, name: nil, unit: nil}
 
   def fixture(:funding) do
@@ -31,6 +40,14 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
 
       conn = get conn, monetizations_funding_path(conn, :show, id)
       response = json_response(conn, 200)["funding"]
+
+      value = length Map.get(response, "projects")
+      assert value == 0
+      value = length Map.get(response, "invests_allows")
+      assert value == 2
+      value = length Map.get(response, "step_templates")
+      assert value == 2
+
       assert response == %{
         "id" => id,
         "create" => "#{Ecto.DateTime.to_iso8601(Ecto.DateTime.utc)}.000000Z",
@@ -41,8 +58,9 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
         "days" => 10,
         "validate" => 80,
         "projects" => [],
-        "step_templates" => [],
-         "invests_allows" => []}
+        "step_templates" => Map.get(response, "step_templates"),
+        "invests_allows" => Map.get(response, "invests_allows")
+      }
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
@@ -60,6 +78,14 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
 
       conn = get conn, monetizations_funding_path(conn, :show, id)
       response = json_response(conn, 200)["funding"]
+
+      value = length Map.get(response, "projects")
+      assert value == 0
+      value = length Map.get(response, "invests_allows")
+      assert value == 2
+      value = length Map.get(response, "step_templates")
+      assert value == 2
+
       assert response == %{
         "id" => id,
         "create" => "#{Ecto.DateTime.to_iso8601(create)}.000000Z",
@@ -70,8 +96,9 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
         "days" => 15,
         "validate" => 85,
         "projects" => [],
-        "step_templates" => [],
-        "invests_allows" => []}
+        "step_templates" => Map.get(response, "step_templates"),
+        "invests_allows" => Map.get(response, "invests_allows")
+      }
     end
 
     test "renders errors when data is invalid", %{conn: conn, funding: funding} do

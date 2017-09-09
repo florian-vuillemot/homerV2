@@ -17,6 +17,7 @@ defmodule Homer.FundersTest do
       {:ok, funder} =
         attrs
         |> Enum.into(@valid_attrs)
+        |> Enum.into(get_valid_attrs())
         |> Funders.create_funder()
 
       funder
@@ -33,28 +34,48 @@ defmodule Homer.FundersTest do
     end
 
     test "create_funder/1 with valid data creates a funder" do
-      assert {:ok, %Funder{} = funder} = Funders.create_funder(@valid_attrs)
+      assert {:ok, %Funder{} = funder} = Funders.create_funder(get_valid_attrs())
       assert funder.status == "Creator"
-      assert funder.user == nil
-      assert funder.project == nil
+      assert funder.user != nil
+      assert funder.project != nil
     end
 
     test "create_funder/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Funders.create_funder(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Funders.create_funder(get_valid_attrs(@invalid_attrs))
+
+      random_number =  :rand.uniform(100000)
+      attrs = get_valid_attrs(@valid_attrs)
+
+      bad_project = Map.put(attrs, :project_id, random_number)
+      assert {:error, %Ecto.Changeset{}} = Funders.create_funder(bad_project)
+
+      bad_user = Map.put(attrs, :user_id, random_number)
+      assert {:error, %Ecto.Changeset{}} = Funders.create_funder(bad_user)
     end
 
     test "update_funder/2 with valid data updates the funder" do
-      funder = funder_fixture()
-      assert {:ok, funder} = Funders.update_funder(funder, @update_attrs)
+      initial_funder = funder_fixture()
+      attrs = get_valid_attrs(@update_attrs, initial_funder)
+      assert {:ok, funder} = Funders.update_funder(initial_funder, attrs)
       assert %Funder{} = funder
       assert funder.status == "Worker"
-      assert funder.user == nil
-      assert funder.project == nil
+      assert funder.user != initial_funder.user_id
+      assert funder.project != initial_funder.project_id
     end
 
     test "update_funder/2 with invalid data returns error changeset" do
       funder = funder_fixture()
       assert {:error, %Ecto.Changeset{}} = Funders.update_funder(funder, @invalid_attrs)
+      assert funder == Funders.get_funder!(funder.id)
+
+      other_funder = funder_fixture() # Other funder with other user and project
+      funder_with_new_user = Map.put(@update_attrs, :user_id, Map.get(other_funder, :user_id))
+      funder_with_new_project = Map.put(@update_attrs, :project_id, Map.get(other_funder, :project_id))
+
+      assert {:error, %Ecto.Changeset{}} = Funders.update_funder(funder, funder_with_new_user)
+      assert funder == Funders.get_funder!(funder.id)
+
+      assert {:error, %Ecto.Changeset{}} = Funders.update_funder(funder, funder_with_new_project)
       assert funder == Funders.get_funder!(funder.id)
     end
 
@@ -81,6 +102,22 @@ defmodule Homer.FundersTest do
         @invalid_status_funder,
         fn status -> assert true != Funders.is_status_funder?(status) end
       )
+    end
+
+    defp get_valid_attrs(attrs \\ @valid_attrs, funder \\ nil) do
+      case nil !== funder do
+        true ->
+          attrs
+          |> Map.put(:user_id, funder.user_id)
+          |> Map.put(:project_id, funder.project_id)
+        _ ->
+          user = Homer.AccountsTest.user_fixture(%{}, true)
+          project = Homer.BuildersTest.project_fixture(%{}, true)
+
+          attrs
+          |> Map.put(:user_id, user.id)
+          |> Map.put(:project_id, project.id)
+      end
     end
   end
 end

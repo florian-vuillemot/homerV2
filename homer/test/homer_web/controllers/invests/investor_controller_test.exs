@@ -9,7 +9,7 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
   @invalid_attrs %{comment: nil, user: nil}
 
   def fixture(:investor) do
-    {:ok, investor} = Invests.create_investor(@create_attrs)
+    {:ok, investor} = Invests.create_investor(valid_attrs())
     investor
   end
 
@@ -20,27 +20,38 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
   describe "index" do
     test "lists all investors", %{conn: conn} do
       conn = get conn, invests_investor_path(conn, :index)
-      assert json_response(conn, 200)["data"] == []
+      assert json_response(conn, 200)["investors"] == []
     end
   end
 
   describe "create investor" do
     test "renders investor when data is valid", %{conn: conn} do
-      conn = post conn, invests_investor_path(conn, :create), investor: @create_attrs
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      conn = post conn, invests_investor_path(conn, :create), investor: valid_attrs()
+      investor = json_response(conn, 201)["investor"]
+      assert %{"id" => id} = investor
 
       conn = get conn, invests_investor_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
+      assert json_response(conn, 200)["investor"] == %{
         "id" => id,
         "comment" => "some comment",
-        "steps_validation" => [],
-        "invest_allow" => nil,
-        "project" => nil,
-        "user" => nil}
+        "steps_validation" => Map.get(investor, "steps_validation"),
+        "invest_allow" => Map.get(investor, "invest_allow"),
+        "project" => Map.get(investor, "project"),
+        "user" => Map.get(investor, "user")}
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post conn, invests_investor_path(conn, :create), investor: @invalid_attrs
+      conn = post conn, invests_investor_path(conn, :create), investor: valid_attrs(@invalid_attrs)
+      assert json_response(conn, 422)["errors"] != %{}
+    end
+
+    test "renders errors when fk is invalid", %{conn: conn} do
+      attrs = valid_attrs()
+                    |> Map.put(:invest_allow_id, -1)
+                    |> Map.put(:project_id, -1)
+                    |> Map.put(:user_id, -1)
+
+      conn = post conn, invests_investor_path(conn, :create), investor: attrs
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
@@ -49,21 +60,22 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
     setup [:create_investor]
 
     test "renders investor when data is valid", %{conn: conn, investor: %Investor{id: id} = investor} do
-      conn = put conn, invests_investor_path(conn, :update, investor), investor: @update_attrs
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
+      conn = put conn, invests_investor_path(conn, :update, investor), investor: valid_attrs(@update_attrs)
+      investor = json_response(conn, 200)["investor"]
+      assert %{"id" => ^id} = investor
 
       conn = get conn, invests_investor_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
+      assert json_response(conn, 200)["investor"] == %{
         "id" => id,
         "comment" => "some updated comment",
-        "steps_validation" => [],
-        "invest_allow" => nil,
-        "project" => nil,
-        "user" => nil}
+        "steps_validation" => Map.get(investor, "steps_validation"),
+        "invest_allow" => Map.get(investor, "invest_allow"),
+        "project" => Map.get(investor, "project"),
+        "user" => Map.get(investor, "user")}
     end
 
     test "renders errors when data is invalid", %{conn: conn, investor: investor} do
-      conn = put conn, invests_investor_path(conn, :update, investor), investor: @invalid_attrs
+      conn = put conn, invests_investor_path(conn, :update, investor), investor: valid_attrs(@invalid_attrs)
       assert json_response(conn, 422)["errors"] != %{}
     end
   end
@@ -83,5 +95,18 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
   defp create_investor(_) do
     investor = fixture(:investor)
     {:ok, investor: investor}
+  end
+
+  defp valid_attrs(attrs \\ @create_attrs) do
+    project = Homer.BuildersTest.project_fixture(%{}, true)
+    user = Homer.AccountsTest.user_fixture(%{}, true)
+    invests_allow = Homer.InvestsAllowsTest.invest_allow_fixture
+
+    attrs = attrs
+            |> Map.put(:project_id, project.id)
+            |> Map.put(:user_id, user.id)
+            |> Map.put(:invest_allow_id, invests_allow.id)
+
+    attrs
   end
 end

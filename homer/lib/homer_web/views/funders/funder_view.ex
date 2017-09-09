@@ -11,6 +11,10 @@ defmodule HomerWeb.Funders.FunderView do
   end
 
   def render("funder.json", %{funder: funder}) do
+    funder = funder
+              |> Homer.ViewsConverter.get_id(:user)
+              |> Homer.ViewsConverter.get_id(:project)
+
     %{id: funder.id,
       status: funder.status,
       user: funder.user,

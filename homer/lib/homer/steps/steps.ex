@@ -56,9 +56,13 @@ defmodule Homer.Steps do
 
   """
   def create_step(attrs \\ %{}) do
-    step = %Step{create_at: Ecto.DateTime.utc}
-    |> Step.changeset(attrs)
-    |> Repo.insert()
+    step =
+      case Map.has_key?(attrs, :step_template) do
+        true -> %Step{create_at: Ecto.DateTime.utc, step_template: Map.get(attrs, :step_template)}
+        _    -> %Step{create_at: Ecto.DateTime.utc}
+      end
+      |> Step.changeset(attrs)
+      |> Repo.insert()
 
     case step do
       {:ok, instance} ->

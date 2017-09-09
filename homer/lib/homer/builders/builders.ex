@@ -55,10 +55,7 @@ defmodule Homer.Builders do
   def list_projects do
     Project
     |> Repo.all
-    |> Repo.preload(:steps)
-    |> Repo.preload(:investors)
-    |> Repo.preload(:funders)
-    |> Repo.preload(:funding)
+    |> preload_project
   end
 
   @doc """
@@ -78,10 +75,7 @@ defmodule Homer.Builders do
   def get_project!(id) do
     Project
     |> Repo.get!(id)
-    |> Repo.preload(:steps)
-    |> Repo.preload(:investors)
-    |> Repo.preload(:funders)
-    |> Repo.preload(:funding)
+    |> preload_project
   end
 
   @doc """
@@ -97,17 +91,37 @@ defmodule Homer.Builders do
 
   """
   def create_project(attrs \\ %{}) do
-    project = %Project{create_at: Ecto.DateTime.utc, status: status_projects(:create)}
-    |> Project.changeset(attrs)
-    |> Repo.insert()
+    funding_id = case Map.has_key?(attrs, :funding_id) do
+      true -> Map.get(attrs, :funding_id)
+      _ -> Map.get(attrs, "funding_id")
+    end
+
+    steps = create_steps(attrs, funding_id)
+
+    project = case steps do
+      nil -> {:error, %Ecto.Changeset{}}
+      _   ->
+        {_, attrs} = Map.pop(attrs, :steps)
+        build_project(attrs)
+    end
 
     case project do
-      {:ok, instance} ->
-        instance = %{instance | steps: [], investors: [], funders: [], funding: nil}
-        {:ok, instance}
-      _ -> project
+      {:ok, instance_project} -> Enum.map(steps,
+          fn step ->
+            {:ok, step} = step
+            step = Map.put(step, :project_id, instance_project.id)
+            Homer.Steps.update_step(step, %{})
+          end
+        )
+        {:ok, preload_project(instance_project)}
+      _ ->
+        if steps != nil do
+          delete_steps(steps)
+        end
+        project
     end
   end
+
 
   @doc """
   Updates a project.
@@ -122,6 +136,16 @@ defmodule Homer.Builders do
 
   """
   def update_project(%Project{} = project, attrs) do
+    init_project = get_project!(project.id)
+
+    # Not allow change funding references after init.
+    attrs = case Homer.Utilities.Constructor.same_fk(init_project, attrs, [:funding_id]) do
+      true ->
+        attrs
+      _ ->
+        %{funding_id: nil}
+    end
+
     project
     |> Project.changeset(attrs)
     |> Repo.update()
@@ -154,5 +178,63 @@ defmodule Homer.Builders do
   """
   def change_project(%Project{} = project) do
     Project.changeset(project, %{})
+  end
+
+  defp preload_project(project) do
+    project
+    |> Repo.preload(:steps)
+    |> Repo.preload(:investors)
+    |> Repo.preload(:funders)
+    |> Repo.preload(:funding)
+  end
+
+  defp create_steps(_, nil), do: nil
+  defp create_steps(attrs, funding_id) do
+    attrs_step = case Map.has_key?(attrs, "steps") do
+      true -> Map.get(attrs, "steps")
+      _ -> Map.get(attrs, :steps)
+    end
+
+    case attrs_step do
+      nil -> nil
+      _   ->
+        case check_same_funding_id(attrs_step, funding_id) do
+          true ->
+            steps = Enum.map(attrs_step, fn step -> Homer.Steps.create_step(step) end)
+
+            case Enum.any?(steps, fn x -> Homer.Utilities.Constructor.error_on_create(x) end) do
+              false ->  steps
+              _     ->  delete_steps(steps)
+                        nil
+            end
+
+          _ -> nil
+        end
+    end
+  end
+
+  defp build_project(attrs) do
+    %Project{create_at: Ecto.DateTime.utc, status: status_projects(:create)}
+    |> Project.changeset(attrs)
+    |> Repo.insert
+  end
+
+  defp delete_steps(steps) do
+    Enum.map(steps, fn {_, step} ->
+      Homer.Steps.delete_step(step) end)
+  end
+
+  defp check_same_funding_id(attrs_steps, funding_id) do
+    steps = Enum.map(attrs_steps,
+      fn step ->
+        funding = case Map.has_key?(step, "funding_id") do
+          true -> Map.get(step, "funding_id")
+          _ -> Map.get(step, :funding_id)
+        end
+        funding_id != funding
+      end
+    )
+
+    Enum.any?(steps)
   end
 end

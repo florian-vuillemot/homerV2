@@ -13,7 +13,7 @@ defmodule Homer.InvestsTest do
     def investor_fixture(attrs \\ %{}) do
       {:ok, investor} =
         attrs
-        |> Enum.into(@valid_attrs)
+        |> Enum.into(valid_attrs())
         |> Invests.create_investor()
 
       investor
@@ -30,18 +30,18 @@ defmodule Homer.InvestsTest do
     end
 
     test "create_investor/1 with valid data creates a investor" do
-      assert {:ok, %Investor{} = investor} = Invests.create_investor(@valid_attrs)
+      assert {:ok, %Investor{} = investor} = Invests.create_investor(valid_attrs())
       assert investor.comment == "some comment"
       assert investor.steps_validation == []
     end
 
     test "create_investor/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Invests.create_investor(@invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Invests.create_investor(valid_attrs(@invalid_attrs))
     end
 
     test "update_investor/2 with valid data updates the investor" do
       investor = investor_fixture()
-      assert {:ok, investor} = Invests.update_investor(investor, @update_attrs)
+      assert {:ok, investor} = Invests.update_investor(investor, valid_attrs(@update_attrs))
       assert %Investor{} = investor
       assert investor.comment == "some updated comment"
       assert investor.steps_validation == []
@@ -49,7 +49,7 @@ defmodule Homer.InvestsTest do
 
     test "update_investor/2 with invalid data returns error changeset" do
       investor = investor_fixture()
-      assert {:error, %Ecto.Changeset{}} = Invests.update_investor(investor, @invalid_attrs)
+      assert {:error, %Ecto.Changeset{}} = Invests.update_investor(investor, valid_attrs(@invalid_attrs))
       assert investor == Invests.get_investor!(investor.id)
     end
 
@@ -62,6 +62,19 @@ defmodule Homer.InvestsTest do
     test "change_investor/1 returns a investor changeset" do
       investor = investor_fixture()
       assert %Ecto.Changeset{} = Invests.change_investor(investor)
+    end
+
+    defp valid_attrs(attrs \\ @valid_attrs) do
+      project = Homer.BuildersTest.project_fixture(%{}, true)
+      user = Homer.AccountsTest.user_fixture(%{}, true)
+      invests_allow = Homer.InvestsAllowsTest.invest_allow_fixture
+
+      attrs = attrs
+        |> Map.put(:project_id, project.id)
+        |> Map.put(:user_id, user.id)
+        |> Map.put(:invest_allow_id, invests_allow.id)
+
+      attrs
     end
   end
 end
