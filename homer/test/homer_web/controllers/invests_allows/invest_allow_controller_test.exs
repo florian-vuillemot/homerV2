@@ -20,17 +20,17 @@ defmodule HomerWeb.InvestsAllows.InvestAllowControllerTest do
   describe "index" do
     test "lists all invests_allows", %{conn: conn} do
       conn = get conn, invests_allows_invest_allow_path(conn, :index)
-      assert json_response(conn, 200)["data"] == []
+      assert json_response(conn, 200)["invest_allows"] == []
     end
   end
 
   describe "create invest_allow" do
     test "renders invest_allow when data is valid", %{conn: conn} do
       conn = post conn, invests_allows_invest_allow_path(conn, :create), invest_allow: @create_attrs
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      assert %{"id" => id} = json_response(conn, 201)["invest_allow"]
 
       conn = get conn, invests_allows_invest_allow_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
+      assert json_response(conn, 200)["invest_allow"] == %{
         "id" => id,
         "description" => "some description",
         "invest" => 42,
@@ -48,10 +48,10 @@ defmodule HomerWeb.InvestsAllows.InvestAllowControllerTest do
 
     test "renders invest_allow when data is valid", %{conn: conn, invest_allow: %InvestAllow{id: id} = invest_allow} do
       conn = put conn, invests_allows_invest_allow_path(conn, :update, invest_allow), invest_allow: @update_attrs
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
+      assert %{"id" => ^id} = json_response(conn, 200)["invest_allow"]
 
       conn = get conn, invests_allows_invest_allow_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
+      assert json_response(conn, 200)["invest_allow"] == %{
         "id" => id,
         "description" => "some updated description",
         "invest" => 43,
