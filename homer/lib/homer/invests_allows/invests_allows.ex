@@ -56,7 +56,7 @@ defmodule Homer.InvestsAllows do
 
   """
   def create_invest_allow(attrs \\ %{}) do
-    invest = %InvestAllow{:create_at => Ecto.DateTime.utc}
+    invest = %InvestAllow{}
     |> InvestAllow.changeset(attrs)
     |> Repo.insert
 
