@@ -76,9 +76,8 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
   describe "update project" do
     setup [:create_project]
 
-    test "renders project when data is valid", %{conn: conn, project: %Project{id: id, create_at: create_at, funding_id: funding_id} = project} do
-      project_attrs = Map.put(create_attrs(@update_attrs), :funding_id, funding_id)
-      conn = put conn, builders_project_path(conn, :update, project), project: project_attrs
+    test "renders project when data is valid", %{conn: conn, project: %Project{id: id, create_at: create_at} = project} do
+      conn = put conn, builders_project_path(conn, :update, project), project: create_attrs(@update_attrs)
       assert json_response(conn, 422)["errors"] != %{}
 
       conn = get conn, builders_project_path(conn, :show, id)
