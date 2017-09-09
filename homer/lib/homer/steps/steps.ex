@@ -20,7 +20,7 @@ defmodule Homer.Steps do
   def list_steps do
     Step
     |> Repo.all
-    |> Repo.preload(:steps_validation)
+    |> preload
   end
 
   @doc """
@@ -40,7 +40,7 @@ defmodule Homer.Steps do
   def get_step!(id) do
     Step
     |> Repo.get!(id)
-    |> Repo.preload(:steps_validation)
+    |> preload
   end
 
   @doc """
@@ -66,8 +66,7 @@ defmodule Homer.Steps do
 
     case step do
       {:ok, instance} ->
-        instance = %{instance | steps_validation: []}
-        {:ok, instance}
+        {:ok, preload(instance)}
       _ -> step
     end
   end
@@ -85,6 +84,16 @@ defmodule Homer.Steps do
 
   """
   def update_step(%Step{} = step, attrs) do
+    initial_step = get_step!(step.id)
+
+    # Not allow change user and project references after init.
+    attrs = case Homer.Utilities.Constructor.same_fk(initial_step, attrs, [:project_id, :step_template_id])  do
+      true ->
+        attrs
+      _ ->
+        %{step_template_id: nil}
+    end
+
     step
     |> Step.changeset(attrs)
     |> Repo.update()
@@ -117,5 +126,12 @@ defmodule Homer.Steps do
   """
   def change_step(%Step{} = step) do
     Step.changeset(step, %{})
+  end
+
+  defp preload(step) do
+    step
+    |> Repo.preload(:project)
+    |> Repo.preload(:steps_validation)
+    |> Repo.preload(:step_template)
   end
 end

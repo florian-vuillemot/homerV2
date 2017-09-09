@@ -28,5 +28,6 @@ defmodule Homer.Steps.Step do
     |> cast(attrs, [:name, :description, :step_template_id])
     |> validate_required([:name, :description, :step_template_id])
     |> foreign_key_constraint(:step_template_id)
+    |> foreign_key_constraint(:project_id)
   end
 end

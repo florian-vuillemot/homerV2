@@ -53,7 +53,7 @@ defmodule HomerWeb.Router do
   scope "/steps", HomerWeb.Steps, as: :steps do
     pipe_through :api
 
-    resources "/steps", StepController
+    resources "/steps", StepController, except: [:create]
   end
 
   scope "/steps_validation", HomerWeb.StepsValidation, as: :steps_validation do
