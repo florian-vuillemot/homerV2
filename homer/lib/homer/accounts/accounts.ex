@@ -116,4 +116,15 @@ defmodule Homer.Accounts do
   def change_user(%User{} = user) do
     User.changeset(user, %{})
   end
+
+  def find_and_confirm_password(params) do
+    query =
+      from u in User,
+           where: u.email == ^Map.get(params, :email) and u.password == ^Map.get(params, :password)
+
+    case Repo.one(query) do
+      %User{} = user -> {:ok, user}
+      nil -> {:error, :unauthorized}
+    end
+  end
 end
