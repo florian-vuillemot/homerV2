@@ -20,8 +20,7 @@ defmodule Homer.Accounts do
   def list_users do
     User
     |> Repo.all
-    |> Repo.preload(:investor_on)
-    |> Repo.preload(:funders)
+    |> preload
   end
 
   @doc """
@@ -41,8 +40,7 @@ defmodule Homer.Accounts do
   def get_user!(id) do
     User
     |> Repo.get!(id)
-    |> Repo.preload(:investor_on)
-    |> Repo.preload(:funders)
+    |> preload
   end
 
   @doc """
@@ -64,8 +62,7 @@ defmodule Homer.Accounts do
 
     case user do
       {:ok, instance} ->
-        instance = %{instance | investor_on: [], funders: []}
-        {:ok, instance}
+        {:ok, preload(instance)}
       _ -> user
     end
   end
@@ -117,14 +114,44 @@ defmodule Homer.Accounts do
     User.changeset(user, %{})
   end
 
-  def find_and_confirm_password(params) do
+  @doc """
+  Return user if found.
+
+  ## Examples
+
+      iex> find_and_confirm_password("user_exist", "correct_password")
+      {:ok, %User{}}
+
+      iex> find_and_confirm_password("not_exist", "correct_password")
+      {:error, :unauthorized}
+
+      iex> find_and_confirm_password("user_exist", "bad_password")
+      {:error, :unauthorized}
+
+      iex> find_and_confirm_password("not_exist", "bad_password")
+      {:error, :unauthorized}
+  """
+  def find_and_confirm_password(email, password) do
     query =
       from u in User,
-           where: u.email == ^Map.get(params, :email) and u.password == ^Map.get(params, :password)
+           where: u.email == ^email and u.password == ^password
 
     case Repo.one(query) do
-      %User{} = user -> {:ok, user}
+      %User{} = user -> {:ok, preload(user)}
       nil -> {:error, :unauthorized}
     end
+  end
+
+
+  #######################################################################################
+  #######################################################################################
+  #######################################################################################
+  #######################################################################################
+  #######################################################################################
+  
+  defp preload(user) do
+    user
+    |> Repo.preload(:investor_on)
+    |> Repo.preload(:funders)
   end
 end

@@ -72,5 +72,26 @@ defmodule Homer.AccountsTest do
       user = user_fixture()
       assert %Ecto.Changeset{} = Accounts.change_user(user)
     end
+
+    test "find_and_confirm_password/2 return user exist" do
+      initial_user = user_fixture()
+      assert {:ok, user} = Accounts.find_and_confirm_password(initial_user.email, initial_user.password)
+      assert initial_user == user
+    end
+
+    test "find_and_confirm_password/2 user exist but bad password" do
+      user = user_fixture()
+      assert {:error, :unauthorized} = Accounts.find_and_confirm_password(user.email, "bad pass #{user.password}")
+    end
+
+    test "find_and_confirm_password/2 user not exist" do
+      user = user_fixture()
+      assert {:error, :unauthorized} = Accounts.find_and_confirm_password("not exist #{user.email}", user.password)
+    end
+
+    test "find_and_confirm_password/2 user not exist and bad pass" do
+      user = user_fixture()
+      assert {:error, :unauthorized} = Accounts.find_and_confirm_password("not exist #{user.email}",  "bad pass #{user.password}")
+    end
   end
 end
