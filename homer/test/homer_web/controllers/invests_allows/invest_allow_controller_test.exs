@@ -19,18 +19,20 @@ defmodule HomerWeb.InvestsAllows.InvestAllowControllerTest do
 
   describe "index" do
     test "lists all invests_allows", %{conn: conn} do
-      conn = get conn, invests_allows_invest_allow_path(conn, :index)
-      assert json_response(conn, 200)["invest_allows"] == []
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = get conn, invests_allows_invest_allow_path(conn, :index)
+      assert json_response(new_conn, 200)["invest_allows"] == []
     end
   end
 
   describe "create invest_allow" do
     test "renders invest_allow when data is valid", %{conn: conn} do
-      conn = post conn, invests_allows_invest_allow_path(conn, :create), invest_allow: @create_attrs
-      assert %{"id" => id} = json_response(conn, 201)["invest_allow"]
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = post conn, invests_allows_invest_allow_path(conn, :create), invest_allow: @create_attrs
+      assert %{"id" => id} = json_response(new_conn, 201)["invest_allow"]
 
-      conn = get conn, invests_allows_invest_allow_path(conn, :show, id)
-      assert json_response(conn, 200)["invest_allow"] == %{
+      new_conn = get conn, invests_allows_invest_allow_path(conn, :show, id)
+      assert json_response(new_conn, 200)["invest_allow"] == %{
         "id" => id,
         "description" => "some description",
         "invest" => 42,
@@ -38,8 +40,9 @@ defmodule HomerWeb.InvestsAllows.InvestAllowControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post conn, invests_allows_invest_allow_path(conn, :create), invest_allow: @invalid_attrs
-      assert json_response(conn, 422)["errors"] != %{}
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = post conn, invests_allows_invest_allow_path(conn, :create), invest_allow: @invalid_attrs
+      assert json_response(new_conn, 422)["errors"] != %{}
     end
   end
 
@@ -47,11 +50,12 @@ defmodule HomerWeb.InvestsAllows.InvestAllowControllerTest do
     setup [:create_invest_allow]
 
     test "renders invest_allow when data is valid", %{conn: conn, invest_allow: %InvestAllow{id: id} = invest_allow} do
-      conn = put conn, invests_allows_invest_allow_path(conn, :update, invest_allow), invest_allow: @update_attrs
-      assert %{"id" => ^id} = json_response(conn, 200)["invest_allow"]
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = put conn, invests_allows_invest_allow_path(conn, :update, invest_allow), invest_allow: @update_attrs
+      assert %{"id" => ^id} = json_response(new_conn, 200)["invest_allow"]
 
-      conn = get conn, invests_allows_invest_allow_path(conn, :show, id)
-      assert json_response(conn, 200)["invest_allow"] == %{
+      new_conn = get conn, invests_allows_invest_allow_path(conn, :show, id)
+      assert json_response(new_conn, 200)["invest_allow"] == %{
         "id" => id,
         "description" => "some updated description",
         "invest" => 43,
@@ -59,8 +63,9 @@ defmodule HomerWeb.InvestsAllows.InvestAllowControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, invest_allow: invest_allow} do
-      conn = put conn, invests_allows_invest_allow_path(conn, :update, invest_allow), invest_allow: @invalid_attrs
-      assert json_response(conn, 422)["errors"] != %{}
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = put conn, invests_allows_invest_allow_path(conn, :update, invest_allow), invest_allow: @invalid_attrs
+      assert json_response(new_conn, 422)["errors"] != %{}
     end
   end
 
@@ -68,8 +73,9 @@ defmodule HomerWeb.InvestsAllows.InvestAllowControllerTest do
     setup [:create_invest_allow]
 
     test "deletes chosen invest_allow", %{conn: conn, invest_allow: invest_allow} do
-      conn = delete conn, invests_allows_invest_allow_path(conn, :delete, invest_allow)
-      assert response(conn, 204)
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = delete conn, invests_allows_invest_allow_path(conn, :delete, invest_allow)
+      assert response(new_conn, 204)
       assert_error_sent 404, fn ->
         get conn, invests_allows_invest_allow_path(conn, :show, invest_allow)
       end

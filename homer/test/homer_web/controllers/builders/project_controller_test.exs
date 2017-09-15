@@ -33,18 +33,20 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
 
   describe "index" do
     test "lists all projects", %{conn: conn} do
-      conn = get conn, builders_project_path(conn, :index)
-      assert json_response(conn, 200)["projects"] == []
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = get conn, builders_project_path(conn, :index)
+      assert json_response(new_conn, 200)["projects"] == []
     end
   end
 
   describe "create project" do
     test "renders project when data is valid", %{conn: conn} do
-      conn = post conn, builders_project_path(conn, :create), project: create_attrs()
-      assert %{"id" => id} = json_response(conn, 201)["project"]
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = post conn, builders_project_path(conn, :create), project: create_attrs()
+      assert %{"id" => id} = json_response(new_conn, 201)["project"]
 
-      conn = get conn, builders_project_path(conn, :show, id)
-      response = json_response(conn, 200)["project"]
+      new_conn = get conn, builders_project_path(conn, :show, id)
+      response = json_response(new_conn, 200)["project"]
 
       Enum.map(
         ["steps", "investors", "funders", "funding"],
@@ -66,15 +68,17 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post conn, builders_project_path(conn, :create), project: create_attrs(@invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = post conn, builders_project_path(conn, :create), project: create_attrs(@invalid_attrs)
+      assert json_response(new_conn, 422)["errors"] != %{}
     end
 
     test "renders errors when funding_id of step is invalid", %{conn: conn} do
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
       attrs = create_attrs()
       attrs = Map.put(attrs, :funding_id, attrs.funding_id - 1)
-      conn = post conn, builders_project_path(conn, :create), project: attrs
-      assert json_response(conn, 422)["errors"] != %{}
+      new_conn = post conn, builders_project_path(conn, :create), project: attrs
+      assert json_response(new_conn, 422)["errors"] != %{}
     end
 
   end
@@ -83,11 +87,12 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
     setup [:create_project]
 
     test "renders project when data is valid", %{conn: conn, project: %Project{id: id, create_at: create_at} = project} do
-      conn = put conn, builders_project_path(conn, :update, project), project: create_attrs(@update_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = put conn, builders_project_path(conn, :update, project), project: create_attrs(@update_attrs)
+      assert json_response(new_conn, 422)["errors"] != %{}
 
-      conn = get conn, builders_project_path(conn, :show, id)
-      update_project = json_response(conn, 200)["project"]
+      new_conn = get conn, builders_project_path(conn, :show, id)
+      update_project = json_response(new_conn, 200)["project"]
 
       project = Homer.ControllerUtilitiesTest.convert_fk(project, [:steps, :investors, :funders, :funding])
 
@@ -106,8 +111,9 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, project: project} do
-      conn = put conn, builders_project_path(conn, :update, project), project: create_attrs(@invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = put conn, builders_project_path(conn, :update, project), project: create_attrs(@invalid_attrs)
+      assert json_response(new_conn, 422)["errors"] != %{}
     end
   end
 
@@ -115,8 +121,9 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
     setup [:create_project]
 
     test "deletes chosen project", %{conn: conn, project: project} do
-      conn = delete conn, builders_project_path(conn, :delete, project)
-      assert response(conn, 204)
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = delete conn, builders_project_path(conn, :delete, project)
+      assert response(new_conn, 204)
       assert_error_sent 404, fn ->
         get conn, builders_project_path(conn, :show, project)
       end
