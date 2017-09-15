@@ -1,6 +1,16 @@
 defmodule HomerWeb.Router do
   use HomerWeb, :router
 
+  def logged_in_action(conn, _params) do
+    Guardian.Plug.current_resource(conn)
+  end
+
+  def unauthenticated(conn, _params) do
+    conn
+    |> put_status(401)
+    |> render("error.json", %{message: "Authentication required"})
+  end
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -13,6 +23,7 @@ defmodule HomerWeb.Router do
     plug :accepts, ["json"]
     plug Guardian.Plug.VerifyHeader, realm: "Bearer"
     plug Guardian.Plug.LoadResource
+    plug Guardian.Plug.EnsureAuthenticated
   end
 
   scope "/", HomerWeb do
