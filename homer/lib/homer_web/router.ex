@@ -11,6 +11,8 @@ defmodule HomerWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Guardian.Plug.VerifyHeader, realm: "Bearer"
+    plug Guardian.Plug.LoadResource
   end
 
   scope "/", HomerWeb do
@@ -24,6 +26,9 @@ defmodule HomerWeb.Router do
     pipe_through :api
 
     resources "/users", UserController
+
+    post "/login", UserAuth, :login
+    get "/logout", UserAuth, :logout
   end
 
   scope "/monetizations", HomerWeb.Monetizations, as: :monetizations do

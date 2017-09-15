@@ -6,6 +6,18 @@ defmodule HomerWeb.Accounts.UserController do
 
   action_fallback HomerWeb.FallbackController
 
+  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+
+  def logged_in_action(conn, _params) do
+    Guardian.Plug.current_resource(conn)
+  end
+
+  def unauthenticated(conn, _params) do
+    conn
+    |> put_status(401)
+    |> render("error.json", %{message: "Authentication required"})
+  end
+
   def index(conn, _params) do
     users = Accounts.list_users()
     render(conn, "index.json", users: users)
