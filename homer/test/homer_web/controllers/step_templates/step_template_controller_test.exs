@@ -82,6 +82,36 @@ defmodule HomerWeb.StepTemplates.StepTemplateControllerTest do
     end
   end
 
+  describe "access not allow" do
+    test "not allow lists all step_template", %{conn: conn} do
+      conn = get conn, step_templates_step_template_path(conn, :index)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow get a step_template", %{conn: conn} do
+      %StepTemplate{id: id} = fixture(:step_template)
+      conn = get conn, step_templates_step_template_path(conn, :show, id)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow create a step_template", %{conn: conn} do
+      conn = post conn, step_templates_step_template_path(conn, :create), user: @create_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to update a step_template", %{conn: conn} do
+      user = fixture(:step_template)
+      conn = put conn, step_templates_step_template_path(conn, :update, user), user: @update_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to delete a step_template", %{conn: conn} do
+      user = fixture(:step_template)
+      conn = delete conn, step_templates_step_template_path(conn, :delete, user)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+  end
+
   defp create_step_template(_) do
     step_template = fixture(:step_template)
     {:ok, step_template: step_template}

@@ -130,6 +130,36 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
     end
   end
 
+  describe "access not allow" do
+    test "not allow lists all projects", %{conn: conn} do
+      conn = get conn, builders_project_path(conn, :index)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow get a projects", %{conn: conn} do
+      %Project{id: id} = fixture(:project)
+      conn = get conn, builders_project_path(conn, :show, id)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow create a projects", %{conn: conn} do
+      conn = post conn, builders_project_path(conn, :create), user: @create_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to update a projects", %{conn: conn} do
+      user = fixture(:project)
+      conn = put conn, builders_project_path(conn, :update, user), user: @update_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to delete a projects", %{conn: conn} do
+      user = fixture(:project)
+      conn = delete conn, builders_project_path(conn, :delete, user)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+  end
+
   defp create_project(_) do
     project = fixture(:project)
     {:ok, project: project}

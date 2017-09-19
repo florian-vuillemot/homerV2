@@ -99,6 +99,36 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
     end
   end
 
+  describe "access not allow" do
+    test "not allow lists all investors", %{conn: conn} do
+      conn = get conn, invests_investor_path(conn, :index)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow get a investors", %{conn: conn} do
+      %Investor{id: id} = fixture(:investor)
+      conn = get conn, invests_investor_path(conn, :show, id)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow create a investors", %{conn: conn} do
+      conn = post conn, invests_investor_path(conn, :create), user: @create_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to update a investors", %{conn: conn} do
+      user = fixture(:investor)
+      conn = put conn, invests_investor_path(conn, :update, user), user: @update_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to delete a investors", %{conn: conn} do
+      user = fixture(:investor)
+      conn = delete conn, invests_investor_path(conn, :delete, user)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+  end
+
   defp create_investor(_) do
     investor = fixture(:investor)
     {:ok, investor: investor}

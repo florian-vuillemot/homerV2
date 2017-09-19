@@ -82,6 +82,36 @@ defmodule HomerWeb.InvestsAllows.InvestAllowControllerTest do
     end
   end
 
+  describe "access not allow" do
+    test "not allow lists all invests_allows", %{conn: conn} do
+      conn = get conn, invests_allows_invest_allow_path(conn, :index)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow get a invests_allows", %{conn: conn} do
+      %InvestAllow{id: id} = fixture(:invest_allow)
+      conn = get conn, invests_allows_invest_allow_path(conn, :show, id)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow create a invests_allows", %{conn: conn} do
+      conn = post conn, invests_allows_invest_allow_path(conn, :create), user: @create_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to update a invests_allows", %{conn: conn} do
+      user = fixture(:invest_allow)
+      conn = put conn, invests_allows_invest_allow_path(conn, :update, user), user: @update_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to delete a invests_allows", %{conn: conn} do
+      user = fixture(:invest_allow)
+      conn = delete conn, invests_allows_invest_allow_path(conn, :delete, user)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+  end
+
   defp create_invest_allow(_) do
     invest_allow = fixture(:invest_allow)
     {:ok, invest_allow: invest_allow}

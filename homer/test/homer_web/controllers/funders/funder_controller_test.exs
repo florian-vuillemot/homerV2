@@ -107,6 +107,36 @@ defmodule HomerWeb.Funders.FunderControllerTest do
     end
   end
 
+  describe "access not allow" do
+    test "not allow lists all funders", %{conn: conn} do
+      conn = get conn, funders_funder_path(conn, :index)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow get a funders", %{conn: conn} do
+      %Funder{id: id} = fixture(:funder)
+      conn = get conn, funders_funder_path(conn, :show, id)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow create a funders", %{conn: conn} do
+      conn = post conn, funders_funder_path(conn, :create), user: @create_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to update a funders", %{conn: conn} do
+      user = fixture(:funder)
+      conn = put conn, funders_funder_path(conn, :update, user), user: @update_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to delete a funders", %{conn: conn} do
+      user = fixture(:funder)
+      conn = delete conn, funders_funder_path(conn, :delete, user)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+  end
+
   defp create_funder(_) do
     funder = fixture(:funder)
     {:ok, funder: funder}

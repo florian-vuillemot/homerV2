@@ -97,6 +97,31 @@ defmodule HomerWeb.Steps.StepControllerTest do
     end
   end
 
+  describe "access not allow" do
+    test "not allow lists all step", %{conn: conn} do
+      conn = get conn, steps_step_path(conn, :index)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow get a step", %{conn: conn} do
+      %Step{id: id} = fixture(:step)
+      conn = get conn, steps_step_path(conn, :show, id)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to update a step", %{conn: conn} do
+      user = fixture(:step)
+      conn = put conn, steps_step_path(conn, :update, user), user: @update_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to delete a step", %{conn: conn} do
+      user = fixture(:step)
+      conn = delete conn, steps_step_path(conn, :delete, user)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+  end
+
   defp create_step(_) do
     step = fixture(:step)
     {:ok, step: step}

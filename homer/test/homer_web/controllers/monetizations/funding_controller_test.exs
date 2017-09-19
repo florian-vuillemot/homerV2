@@ -56,6 +56,7 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
         "description" => "some description",
         "name" => "some name",
         "unit" => "some unit",
+
         "valid" => false,
         "days" => 10,
         "validate" => 80,
@@ -122,6 +123,36 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
       assert_error_sent 404, fn ->
         get conn, monetizations_funding_path(conn, :show, funding)
       end
+    end
+  end
+
+  describe "access not allow" do
+    test "not allow lists all funding", %{conn: conn} do
+      conn = get conn, monetizations_funding_path(conn, :index)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow get a funding", %{conn: conn} do
+      %Funding{id: id} = fixture(:funding)
+      conn = get conn, monetizations_funding_path(conn, :show, id)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow create a funding", %{conn: conn} do
+      conn = post conn, monetizations_funding_path(conn, :create), user: @create_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to update a funding", %{conn: conn} do
+      user = fixture(:funding)
+      conn = put conn, monetizations_funding_path(conn, :update, user), user: @update_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to delete a funding", %{conn: conn} do
+      user = fixture(:funding)
+      conn = delete conn, monetizations_funding_path(conn, :delete, user)
+      assert json_response(conn, 401)["message"] != %{}
     end
   end
 

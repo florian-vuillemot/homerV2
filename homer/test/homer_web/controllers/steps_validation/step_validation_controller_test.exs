@@ -80,6 +80,36 @@ defmodule HomerWeb.StepsValidation.StepValidationControllerTest do
     end
   end
 
+  describe "access not allow" do
+    test "not allow lists all step_validation", %{conn: conn} do
+      conn = get conn, steps_validation_step_validation_path(conn, :index)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow get a step_validation", %{conn: conn} do
+      %StepValidation{id: id} = fixture(:step_validation)
+      conn = get conn, steps_validation_step_validation_path(conn, :show, id)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow create a step_validation", %{conn: conn} do
+      conn = post conn, steps_validation_step_validation_path(conn, :create), user: @create_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to update a step_validation", %{conn: conn} do
+      user = fixture(:step_validation)
+      conn = put conn, steps_validation_step_validation_path(conn, :update, user), user: @update_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to delete a step_validation", %{conn: conn} do
+      user = fixture(:step_validation)
+      conn = delete conn, steps_validation_step_validation_path(conn, :delete, user)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+  end
+
   defp create_step_validation(_) do
     step_validation = fixture(:step_validation)
     {:ok, step_validation: step_validation}
