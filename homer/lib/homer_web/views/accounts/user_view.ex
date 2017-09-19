@@ -16,4 +16,10 @@ defmodule HomerWeb.Accounts.UserView do
       investor_on: user.investor_on,
       funders: user.funders}
   end
+
+  def render("error.json", %{message: message}) do
+    %{
+      message: message
+    }
+  end
 end

@@ -19,18 +19,20 @@ defmodule HomerWeb.Funders.FunderControllerTest do
 
   describe "index" do
     test "lists all funders", %{conn: conn} do
-      conn = get conn, funders_funder_path(conn, :index)
-      assert json_response(conn, 200)["funders"] == []
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = get conn, funders_funder_path(conn, :index)
+      assert json_response(new_conn, 200)["funders"] == []
     end
   end
 
   describe "create funder" do
     test "renders funder when data is valid", %{conn: conn} do
-      conn = post conn, funders_funder_path(conn, :create), funder: valid_attrs(@create_attrs)
-      assert %{"id" => id} = json_response(conn, 201)["funder"]
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = post conn, funders_funder_path(conn, :create), funder: valid_attrs(@create_attrs)
+      assert %{"id" => id} = json_response(new_conn, 201)["funder"]
 
-      conn = get conn, funders_funder_path(conn, :show, id)
-      funder = json_response(conn, 200)["funder"]
+      new_conn = get conn, funders_funder_path(conn, :show, id)
+      funder = json_response(new_conn, 200)["funder"]
 
       assert Map.get(funder, "project") != nil
       assert Map.get(funder, "user") != nil
@@ -43,21 +45,23 @@ defmodule HomerWeb.Funders.FunderControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post conn, funders_funder_path(conn, :create), funder: valid_attrs(@invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = post conn, funders_funder_path(conn, :create), funder: valid_attrs(@invalid_attrs)
+      assert json_response(new_conn, 422)["errors"] != %{}
     end
 
     test "renders errors when fk is invalid", %{conn: conn} do
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
       funder_attrs = valid_attrs(@create_attrs)
 
-      bad_user_id = Map.put(funder_attrs, :user_id, Map.get(funder_attrs, :user_id) - 1)
-      bad_project_id = Map.put(funder_attrs, :project_id, Map.get(funder_attrs, :project_id) - 1)
+      bad_user_id = Map.put(funder_attrs, :user_id, -1)
+      bad_project_id = Map.put(funder_attrs, :project_id, -1)
 
-      conn = post conn, funders_funder_path(conn, :create), funder: bad_user_id
-      assert json_response(conn, 422)["errors"] != %{}
+      new_conn = post conn, funders_funder_path(conn, :create), funder: bad_user_id
+      assert json_response(new_conn, 422)["errors"] != %{}
 
-      conn = post conn, funders_funder_path(conn, :create), funder: bad_project_id
-      assert json_response(conn, 422)["errors"] != %{}
+      new_conn = post conn, funders_funder_path(conn, :create), funder: bad_project_id
+      assert json_response(new_conn, 422)["errors"] != %{}
     end
 
   end
@@ -66,11 +70,12 @@ defmodule HomerWeb.Funders.FunderControllerTest do
     setup [:create_funder]
 
     test "renders funder when data is valid", %{conn: conn, funder: %Funder{id: id} = funder} do
-      conn = put conn, funders_funder_path(conn, :update, funder), funder: valid_attrs(@update_attrs, funder)
-      assert %{"id" => ^id} = json_response(conn, 200)["funder"]
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = put conn, funders_funder_path(conn, :update, funder), funder: valid_attrs(@update_attrs, funder)
+      assert %{"id" => ^id} = json_response(new_conn, 200)["funder"]
 
-      conn = get conn, funders_funder_path(conn, :show, id)
-      funder = json_response(conn, 200)["funder"]
+      new_conn = get conn, funders_funder_path(conn, :show, id)
+      funder = json_response(new_conn, 200)["funder"]
 
       assert Map.get(funder, "project") != nil
       assert Map.get(funder, "user") != nil
@@ -83,8 +88,9 @@ defmodule HomerWeb.Funders.FunderControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, funder: funder} do
-      conn = put conn, funders_funder_path(conn, :update, funder), funder: valid_attrs(@invalid_attrs)
-      assert json_response(conn, 422)["errors"] != %{}
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = put conn, funders_funder_path(conn, :update, funder), funder: valid_attrs(@invalid_attrs)
+      assert json_response(new_conn, 422)["errors"] != %{}
     end
   end
 
@@ -92,11 +98,42 @@ defmodule HomerWeb.Funders.FunderControllerTest do
     setup [:create_funder]
 
     test "deletes chosen funder", %{conn: conn, funder: funder} do
-      conn = delete conn, funders_funder_path(conn, :delete, funder)
-      assert response(conn, 204)
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = delete conn, funders_funder_path(conn, :delete, funder)
+      assert response(new_conn, 204)
       assert_error_sent 404, fn ->
         get conn, funders_funder_path(conn, :show, funder)
       end
+    end
+  end
+
+  describe "access not allow" do
+    test "not allow lists all funders", %{conn: conn} do
+      conn = get conn, funders_funder_path(conn, :index)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow get a funders", %{conn: conn} do
+      %Funder{id: id} = fixture(:funder)
+      conn = get conn, funders_funder_path(conn, :show, id)
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow create a funders", %{conn: conn} do
+      conn = post conn, funders_funder_path(conn, :create), user: @create_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to update a funders", %{conn: conn} do
+      user = fixture(:funder)
+      conn = put conn, funders_funder_path(conn, :update, user), user: @update_attrs
+      assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "not allow to delete a funders", %{conn: conn} do
+      user = fixture(:funder)
+      conn = delete conn, funders_funder_path(conn, :delete, user)
+      assert json_response(conn, 401)["message"] != %{}
     end
   end
 
