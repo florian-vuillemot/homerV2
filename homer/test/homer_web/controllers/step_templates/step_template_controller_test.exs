@@ -19,18 +19,20 @@ defmodule HomerWeb.StepTemplates.StepTemplateControllerTest do
 
   describe "index" do
     test "lists all step_templates", %{conn: conn} do
-      conn = get conn, step_templates_step_template_path(conn, :index)
-      assert json_response(conn, 200)["data"] == []
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = get conn, step_templates_step_template_path(conn, :index)
+      assert json_response(new_conn, 200)["data"] == []
     end
   end
 
   describe "create step_template" do
     test "renders step_template when data is valid", %{conn: conn} do
-      conn = post conn, step_templates_step_template_path(conn, :create), step_template: @create_attrs
-      assert %{"id" => id} = json_response(conn, 201)["data"]
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = post conn, step_templates_step_template_path(conn, :create), step_template: @create_attrs
+      assert %{"id" => id} = json_response(new_conn, 201)["data"]
 
-      conn = get conn, step_templates_step_template_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
+      new_conn = get conn, step_templates_step_template_path(conn, :show, id)
+      assert json_response(new_conn, 200)["data"] == %{
         "id" => id,
         "description" => "some description",
         "name" => "some name",
@@ -38,8 +40,9 @@ defmodule HomerWeb.StepTemplates.StepTemplateControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post conn, step_templates_step_template_path(conn, :create), step_template: @invalid_attrs
-      assert json_response(conn, 422)["errors"] != %{}
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = post conn, step_templates_step_template_path(conn, :create), step_template: @invalid_attrs
+      assert json_response(new_conn, 422)["errors"] != %{}
     end
   end
 
@@ -47,11 +50,12 @@ defmodule HomerWeb.StepTemplates.StepTemplateControllerTest do
     setup [:create_step_template]
 
     test "renders step_template when data is valid", %{conn: conn, step_template: %StepTemplate{id: id} = step_template} do
-      conn = put conn, step_templates_step_template_path(conn, :update, step_template), step_template: @update_attrs
-      assert %{"id" => ^id} = json_response(conn, 200)["data"]
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = put conn, step_templates_step_template_path(conn, :update, step_template), step_template: @update_attrs
+      assert %{"id" => ^id} = json_response(new_conn, 200)["data"]
 
-      conn = get conn, step_templates_step_template_path(conn, :show, id)
-      assert json_response(conn, 200)["data"] == %{
+      new_conn = get conn, step_templates_step_template_path(conn, :show, id)
+      assert json_response(new_conn, 200)["data"] == %{
         "id" => id,
         "description" => "some updated description",
         "name" => "some updated name",
@@ -59,8 +63,9 @@ defmodule HomerWeb.StepTemplates.StepTemplateControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, step_template: step_template} do
-      conn = put conn, step_templates_step_template_path(conn, :update, step_template), step_template: @invalid_attrs
-      assert json_response(conn, 422)["errors"] != %{}
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = put conn, step_templates_step_template_path(conn, :update, step_template), step_template: @invalid_attrs
+      assert json_response(new_conn, 422)["errors"] != %{}
     end
   end
 
@@ -68,8 +73,9 @@ defmodule HomerWeb.StepTemplates.StepTemplateControllerTest do
     setup [:create_step_template]
 
     test "deletes chosen step_template", %{conn: conn, step_template: step_template} do
-      conn = delete conn, step_templates_step_template_path(conn, :delete, step_template)
-      assert response(conn, 204)
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = delete conn, step_templates_step_template_path(conn, :delete, step_template)
+      assert response(new_conn, 204)
       assert_error_sent 404, fn ->
         get conn, step_templates_step_template_path(conn, :show, step_template)
       end

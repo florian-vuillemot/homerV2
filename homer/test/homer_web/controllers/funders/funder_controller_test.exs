@@ -54,8 +54,8 @@ defmodule HomerWeb.Funders.FunderControllerTest do
       conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
       funder_attrs = valid_attrs(@create_attrs)
 
-      bad_user_id = Map.put(funder_attrs, :user_id, Map.get(funder_attrs, :user_id) - 1)
-      bad_project_id = Map.put(funder_attrs, :project_id, Map.get(funder_attrs, :project_id) - 1)
+      bad_user_id = Map.put(funder_attrs, :user_id, -1)
+      bad_project_id = Map.put(funder_attrs, :project_id, -1)
 
       new_conn = post conn, funders_funder_path(conn, :create), funder: bad_user_id
       assert json_response(new_conn, 422)["errors"] != %{}

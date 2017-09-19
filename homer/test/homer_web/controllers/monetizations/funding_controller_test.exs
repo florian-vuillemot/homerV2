@@ -28,18 +28,20 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
 
   describe "index" do
     test "lists all fundings", %{conn: conn} do
-      conn = get conn, monetizations_funding_path(conn, :index)
-      assert json_response(conn, 200)["fundings"] == []
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = get conn, monetizations_funding_path(conn, :index)
+      assert json_response(new_conn, 200)["fundings"] == []
     end
   end
 
   describe "create funding" do
     test "renders funding when data is valid", %{conn: conn} do
-      conn = post conn, monetizations_funding_path(conn, :create), funding: @create_attrs
-      assert %{"id" => id} = json_response(conn, 201)["funding"]
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = post conn, monetizations_funding_path(conn, :create), funding: @create_attrs
+      assert %{"id" => id} = json_response(new_conn, 201)["funding"]
 
-      conn = get conn, monetizations_funding_path(conn, :show, id)
-      response = json_response(conn, 200)["funding"]
+      new_conn = get conn, monetizations_funding_path(conn, :show, id)
+      response = json_response(new_conn, 200)["funding"]
 
       value = length Map.get(response, "projects")
       assert value == 0
@@ -64,8 +66,9 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = post conn, monetizations_funding_path(conn, :create), funding: @invalid_attrs
-      assert json_response(conn, 422)["errors"] != %{}
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = post conn, monetizations_funding_path(conn, :create), funding: @invalid_attrs
+      assert json_response(new_conn, 422)["errors"] != %{}
     end
   end
 
@@ -73,11 +76,12 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
     setup [:create_funding]
 
     test "renders funding when data is valid", %{conn: conn, funding: %Funding{id: id, create: create} = funding} do
-      conn = put conn, monetizations_funding_path(conn, :update, funding), funding: @update_attrs
-      assert %{"id" => ^id} = json_response(conn, 200)["funding"]
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = put conn, monetizations_funding_path(conn, :update, funding), funding: @update_attrs
+      assert %{"id" => ^id} = json_response(new_conn, 200)["funding"]
 
-      conn = get conn, monetizations_funding_path(conn, :show, id)
-      response = json_response(conn, 200)["funding"]
+      new_conn = get conn, monetizations_funding_path(conn, :show, id)
+      response = json_response(new_conn, 200)["funding"]
 
       value = length Map.get(response, "projects")
       assert value == 0
@@ -102,8 +106,9 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, funding: funding} do
-      conn = put conn, monetizations_funding_path(conn, :update, funding), funding: @invalid_attrs
-      assert json_response(conn, 422)["errors"] != %{}
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = put conn, monetizations_funding_path(conn, :update, funding), funding: @invalid_attrs
+      assert json_response(new_conn, 422)["errors"] != %{}
     end
   end
 
@@ -111,8 +116,9 @@ defmodule HomerWeb.Monetizations.FundingControllerTest do
     setup [:create_funding]
 
     test "deletes chosen funding", %{conn: conn, funding: funding} do
-      conn = delete conn, monetizations_funding_path(conn, :delete, funding)
-      assert response(conn, 204)
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = delete conn, monetizations_funding_path(conn, :delete, funding)
+      assert response(new_conn, 204)
       assert_error_sent 404, fn ->
         get conn, monetizations_funding_path(conn, :show, funding)
       end
