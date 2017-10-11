@@ -82,6 +82,7 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
     end
 
     test "renders errors when step are not in number", %{conn: conn} do
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
       attrs = create_attrs()
       {_, steps} = Map.get(attrs, :steps) |> List.pop_at(0)
       attrs = Map.put(attrs, :steps, steps)
