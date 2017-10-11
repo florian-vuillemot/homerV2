@@ -5,7 +5,6 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
   alias Homer.Invests.Investor
 
   @create_attrs %{comment: "some comment", user: 1}
-  @update_attrs %{comment: "some updated comment", user: 1}
   @invalid_attrs %{comment: nil, user: nil}
 
   def fixture(:investor) do
@@ -60,45 +59,6 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
     end
   end
 
-  describe "update investor" do
-    setup [:create_investor]
-
-    test "renders investor when data is valid", %{conn: conn, investor: %Investor{id: id} = investor} do
-      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
-      new_conn = put conn, invests_investor_path(conn, :update, investor), investor: valid_attrs(@update_attrs)
-      investor = json_response(new_conn, 200)["investor"]
-      assert %{"id" => ^id} = investor
-
-      new_conn = get conn, invests_investor_path(conn, :show, id)
-      assert json_response(new_conn, 200)["investor"] == %{
-        "id" => id,
-        "comment" => "some updated comment",
-        "steps_validation" => Map.get(investor, "steps_validation"),
-        "invest_allow" => Map.get(investor, "invest_allow"),
-        "project" => Map.get(investor, "project"),
-        "user" => Map.get(investor, "user")}
-    end
-
-    test "renders errors when data is invalid", %{conn: conn, investor: investor} do
-      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
-      new_conn = put conn, invests_investor_path(conn, :update, investor), investor: valid_attrs(@invalid_attrs)
-      assert json_response(new_conn, 422)["errors"] != %{}
-    end
-  end
-
-  describe "delete investor" do
-    setup [:create_investor]
-
-    test "deletes chosen investor", %{conn: conn, investor: investor} do
-      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
-      new_conn = delete conn, invests_investor_path(conn, :delete, investor)
-      assert response(new_conn, 204)
-      assert_error_sent 404, fn ->
-        get conn, invests_investor_path(conn, :show, investor)
-      end
-    end
-  end
-
   describe "access not allow" do
     test "not allow lists all investors", %{conn: conn} do
       conn = get conn, invests_investor_path(conn, :index)
@@ -115,23 +75,6 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
       conn = post conn, invests_investor_path(conn, :create), user: @create_attrs
       assert json_response(conn, 401)["message"] != %{}
     end
-
-    test "not allow to update a investors", %{conn: conn} do
-      user = fixture(:investor)
-      conn = put conn, invests_investor_path(conn, :update, user), user: @update_attrs
-      assert json_response(conn, 401)["message"] != %{}
-    end
-
-    test "not allow to delete a investors", %{conn: conn} do
-      user = fixture(:investor)
-      conn = delete conn, invests_investor_path(conn, :delete, user)
-      assert json_response(conn, 401)["message"] != %{}
-    end
-  end
-
-  defp create_investor(_) do
-    investor = fixture(:investor)
-    {:ok, investor: investor}
   end
 
   defp valid_attrs(attrs \\ @create_attrs) do

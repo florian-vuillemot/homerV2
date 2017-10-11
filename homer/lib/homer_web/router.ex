@@ -57,7 +57,7 @@ defmodule HomerWeb.Router do
   scope "/invests", HomerWeb.Invests, as: :invests do
     pipe_through :api
 
-    resources "/investors", InvestorController
+    resources "/investors", InvestorController, except: [:edit, :update, :delete]
   end
 
   scope "/step_templates", HomerWeb.StepTemplates, as: :step_templates do
