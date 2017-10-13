@@ -44,7 +44,7 @@ defmodule Homer.Invests do
   end
 
   @doc """
-  Creates a investor.
+  Creates a investor if project is not totally invest
 
   ## Examples
 
@@ -56,28 +56,9 @@ defmodule Homer.Invests do
 
   """
   def create_investor(attrs \\ %{}) do
-    project_id = case Map.has_key?(attrs, :project_id) do
-      true -> Map.get(attrs, :project_id)
-      _ -> Map.get(attrs, "project_id")
-    end
-    invest_allow_id = case Map.has_key?(attrs, :invest_allow_id) do
-      true -> Map.get(attrs, :invest_allow_id)
-      _ -> Map.get(attrs, "invest_allow_id")
-    end
-
-    invest_allow = try do
-      {actual_invest, to_raise} = Homer.Builders.get_project!(project_id) |> Homer.Builders.invest
-      invest_allow = Homer.InvestsAllows.get_invest_allow! invest_allow_id
-      actual_invest + invest_allow.invest <= to_raise
-    rescue
-      _ -> false
-    end
-
-    case invest_allow do
-      true -> investor = %Investor{}
-        |> Investor.changeset(attrs)
-        |> Repo.insert()
-
+    case invest_allow?(attrs) do
+      true ->
+        investor = invest(attrs)
         case investor do
           {:ok, instance} ->
             {:ok, preload_investor(instance)}
@@ -143,4 +124,53 @@ defmodule Homer.Invests do
     |> Repo.preload(:invest_allow)
     |> Repo.preload(:project)
   end
+
+
+  #Invest the project and return it.
+  #Verify after fetching in base if project not out of bound, delete element if need
+  defp invest(attrs) do
+    investor = %Investor{}
+               |> Investor.changeset(attrs)
+               |> Repo.insert()
+
+    {actual_invest, to_raise} = get_project_invest(attrs)
+
+    case actual_invest > to_raise do
+      true ->
+        delete_investor(investor)
+        changeset = Investor.changeset(%Investor{}, %{})
+        {:error, Ecto.Changeset.add_error(changeset, :error, "Ever invest")}
+      false ->
+        investor
+    end
+  end
+
+
+  #Return the tuple of project investement
+  #{actual_invest, to_raise}
+  defp get_project_invest(attrs) do
+    project_id = case Map.has_key?(attrs, :project_id) do
+      true -> Map.get(attrs, :project_id)
+      _ -> Map.get(attrs, "project_id")
+    end
+
+    Homer.Builders.get_project!(project_id) |> Homer.Builders.invest
+  end
+
+  #Return true if you can invest on project
+  defp invest_allow?(attrs) do
+    invest_allow_id = case Map.has_key?(attrs, :invest_allow_id) do
+      true -> Map.get(attrs, :invest_allow_id)
+      _ -> Map.get(attrs, "invest_allow_id")
+    end
+
+    try do
+      {actual_invest, to_raise} = get_project_invest(attrs)
+      invest_allow = Homer.InvestsAllows.get_invest_allow! invest_allow_id
+      actual_invest + invest_allow.invest <= to_raise
+    rescue
+      _ -> false
+    end
+  end
+
 end
