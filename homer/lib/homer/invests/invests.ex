@@ -133,15 +133,20 @@ defmodule Homer.Invests do
                |> Investor.changeset(attrs)
                |> Repo.insert()
 
-    {actual_invest, to_raise} = get_project_invest(attrs)
+    try do
+      {actual_invest, to_raise} = get_project_invest(attrs)
 
-    case actual_invest > to_raise do
-      true ->
-        delete_investor(investor)
+      case actual_invest > to_raise do
+        true ->
+          delete_investor(investor)
+          raise ""
+        false ->
+          investor
+      end
+    rescue
+      _ ->
         changeset = Investor.changeset(%Investor{}, %{})
         {:error, Ecto.Changeset.add_error(changeset, :error, "Ever invest")}
-      false ->
-        investor
     end
   end
 
