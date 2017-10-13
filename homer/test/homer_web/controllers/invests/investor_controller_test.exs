@@ -41,6 +41,17 @@ defmodule HomerWeb.Invests.InvestorControllerTest do
         "user" => Map.get(investor, "user")}
     end
 
+    test "renders multiple investor", %{conn: conn} do
+      attrs = valid_attrs()
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = post conn, invests_investor_path(conn, :create), investor: attrs
+      assert json_response(new_conn, 201)["investor"] != %{}
+      new_conn = post conn, invests_investor_path(conn, :create), investor: attrs
+      assert json_response(new_conn, 201)["investor"] != %{}
+      new_conn = post conn, invests_investor_path(conn, :create), investor: attrs
+      assert json_response(new_conn, 422)["error"] != %{}
+    end
+
     test "renders errors when data is invalid", %{conn: conn} do
       conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
       new_conn = post conn, invests_investor_path(conn, :create), investor: valid_attrs(@invalid_attrs)

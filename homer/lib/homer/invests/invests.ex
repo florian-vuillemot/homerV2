@@ -56,14 +56,36 @@ defmodule Homer.Invests do
 
   """
   def create_investor(attrs \\ %{}) do
-    investor = %Investor{}
-    |> Investor.changeset(attrs)
-    |> Repo.insert()
+    project_id = case Map.has_key?(attrs, :project_id) do
+      true -> Map.get(attrs, :project_id)
+      _ -> Map.get(attrs, "project_id")
+    end
+    invest_allow_id = case Map.has_key?(attrs, :invest_allow_id) do
+      true -> Map.get(attrs, :invest_allow_id)
+      _ -> Map.get(attrs, "invest_allow_id")
+    end
 
-    case investor do
-      {:ok, instance} ->
-        {:ok, preload_investor(instance)}
-      _ -> investor
+    invest_allow = try do
+      {actual_invest, to_raise} = Homer.Builders.get_project!(project_id) |> Homer.Builders.invest
+      invest_allow = Homer.InvestsAllows.get_invest_allow! invest_allow_id
+      actual_invest + invest_allow.invest <= to_raise
+    rescue
+      _ -> false
+    end
+
+    case invest_allow do
+      true -> investor = %Investor{}
+        |> Investor.changeset(attrs)
+        |> Repo.insert()
+
+        case investor do
+          {:ok, instance} ->
+            {:ok, preload_investor(instance)}
+          _ -> investor
+        end
+      _ ->
+        changeset = Investor.changeset(%Investor{}, %{})
+        {:error, Ecto.Changeset.add_error(changeset, :error, "Ever invest")}
     end
   end
 
