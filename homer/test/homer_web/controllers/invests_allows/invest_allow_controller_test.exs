@@ -4,7 +4,7 @@ defmodule HomerWeb.InvestsAllows.InvestAllowControllerTest do
   alias Homer.InvestsAllows
   alias Homer.InvestsAllows.InvestAllow
 
-  @create_attrs %{description: "some description", invest: 42, name: "some name"}
+  @create_attrs %{description: "some description", invest: 21, name: "some name"}
   @update_attrs %{description: "some updated description", invest: 43, name: "some updated name"}
   @invalid_attrs %{description: nil, invest: nil, name: nil}
 
@@ -35,7 +35,7 @@ defmodule HomerWeb.InvestsAllows.InvestAllowControllerTest do
       assert json_response(new_conn, 200)["invest_allow"] == %{
         "id" => id,
         "description" => "some description",
-        "invest" => 42,
+        "invest" => 21,
         "name" => "some name"}
     end
 

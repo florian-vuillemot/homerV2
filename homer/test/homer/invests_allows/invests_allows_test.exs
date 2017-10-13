@@ -6,7 +6,7 @@ defmodule Homer.InvestsAllowsTest do
   describe "invests_allows" do
     alias Homer.InvestsAllows.InvestAllow
 
-    @valid_attrs %{description: "some description", invest: 42, name: "some name"}
+    @valid_attrs %{description: "some description", invest: 21, name: "some name"}
     @update_attrs %{description: "some updated description", invest: 43, name: "some updated name"}
     @invalid_attrs %{description: nil, invest: nil, name: nil}
 
@@ -36,7 +36,7 @@ defmodule Homer.InvestsAllowsTest do
     test "create_invest_allow/1 with valid data creates a invest_allow" do
       assert {:ok, %InvestAllow{} = invest_allow} = InvestsAllows.create_invest_allow(@valid_attrs)
       assert invest_allow.description == "some description"
-      assert invest_allow.invest == 42
+      assert invest_allow.invest == 21
       assert invest_allow.name == "some name"
     end
 
