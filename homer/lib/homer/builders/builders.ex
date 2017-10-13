@@ -180,6 +180,22 @@ defmodule Homer.Builders do
     Project.changeset(project, %{})
   end
 
+  def invest(%Project{} = project) do
+    actual_invest = case length(project.investors) do
+      0 -> 0
+      1 -> 1
+      _ -> Enum.reduce(
+              project.investors, 0,
+              fn (investor, acc) ->
+                invest_allow = Homer.InvestsAllows.get_invest_allow!(investor.invest_allow_id)
+                acc + invest_allow.invest
+              end
+           )
+    end
+
+    {actual_invest, project.to_raise}
+  end
+
   defp preload_project(project) do
     project
     |> Repo.preload(:steps)
