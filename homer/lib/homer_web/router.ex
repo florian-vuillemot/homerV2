@@ -75,7 +75,7 @@ defmodule HomerWeb.Router do
   scope "/steps_validation", HomerWeb.StepsValidation, as: :steps_validation do
     pipe_through :api
 
-    resources "/steps_validation", StepValidationController
+    resources "/steps_validation", StepValidationController, except: [:edit, :update, :delete]
   end
 
   scope "/invests_allows", HomerWeb.InvestsAllows, as: :invests_allows do

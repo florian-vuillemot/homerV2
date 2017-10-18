@@ -20,7 +20,9 @@ defmodule Homer.StepsValidation.StepValidation do
   @doc false
   def changeset(%StepValidation{} = step_validation, attrs) do
     step_validation
-    |> cast(attrs, [:valid, :comment])
-    |> validate_required([:valid, :comment])
+    |> cast(attrs, [:valid, :comment, :step_id, :investor_id])
+    |> validate_required([:valid, :comment, :step_id, :investor_id])
+    |> foreign_key_constraint(:step_id)
+    |> foreign_key_constraint(:investor_id)
   end
 end

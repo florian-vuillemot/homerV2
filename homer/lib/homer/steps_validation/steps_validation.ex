@@ -50,9 +50,22 @@ defmodule Homer.StepsValidation do
 
   """
   def create_step_validation(attrs \\ %{}) do
-    %StepValidation{}
-    |> StepValidation.changeset(attrs)
-    |> Repo.insert()
+    step_id = Homer.Utilities.Convertor.get_correct_key(attrs, :step_id, -1)
+    investor_id = Homer.Utilities.Convertor.get_correct_key(attrs, :investor_id, -1)
+
+    query = from step in StepValidation,
+                 where: step.step_id == ^step_id and step.investor_id == ^investor_id,
+                 select: step.id
+
+    case length(Repo.all(query)) do
+      0 ->
+        %StepValidation{}
+        |> StepValidation.changeset(attrs)
+        |> Repo.insert()
+      _ ->
+        changeset = StepValidation.changeset(%StepValidation{}, %{})
+        {:error, Ecto.Changeset.add_error(changeset, :error, "Step ever validate")}
+    end
   end
 
   @doc """
