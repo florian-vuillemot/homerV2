@@ -26,7 +26,7 @@ defmodule HomerWeb.StepsValidation.StepValidationControllerTest do
     test "lists all steps_validation", %{conn: conn} do
       conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
       new_conn = get conn, steps_validation_step_validation_path(conn, :index)
-      assert json_response(new_conn, 200)["data"] == []
+      assert json_response(new_conn, 200)["step_validation"] == []
     end
   end
 
@@ -34,10 +34,10 @@ defmodule HomerWeb.StepsValidation.StepValidationControllerTest do
     test "renders step_validation when data is valid", %{conn: conn} do
       conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
       new_conn = post conn, steps_validation_step_validation_path(conn, :create), step_validation: create_attrs(@create_attrs)
-      assert %{"id" => id} = json_response(new_conn, 201)["data"]
+      assert %{"id" => id} = json_response(new_conn, 201)["step_validation"]
 
       new_conn = get conn, steps_validation_step_validation_path(conn, :show, id)
-      assert json_response(new_conn, 200)["data"] == %{
+      assert json_response(new_conn, 200)["step_validation"] == %{
         "id" => id,
         "comment" => "some comment",
         "valid" => 42}
@@ -53,7 +53,7 @@ defmodule HomerWeb.StepsValidation.StepValidationControllerTest do
       attrs = create_attrs(@create_attrs)
       conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
       new_conn = post conn, steps_validation_step_validation_path(conn, :create), step_validation: attrs
-      assert %{"id" => _} = json_response(new_conn, 201)["data"]
+      assert %{"id" => _} = json_response(new_conn, 201)["step_validation"]
 
       new_conn = post conn, steps_validation_step_validation_path(conn, :create), step_validation: attrs
       assert json_response(new_conn, 422)["errors"] != %{}
@@ -70,10 +70,10 @@ defmodule HomerWeb.StepsValidation.StepValidationControllerTest do
     test "renders step_validation when data is valid", %{conn: conn, step_validation: %StepValidation{id: id} = step_validation} do
       conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
       new_conn = put conn, steps_validation_step_validation_path(conn, :update, step_validation), step_validation: create_attrs(@update_attrs)
-      assert %{"id" => ^id} = json_response(new_conn, 200)["data"]
+      assert %{"id" => ^id} = json_response(new_conn, 200)["step_validation"]
 
       new_conn = get conn, steps_validation_step_validation_path(conn, :show, id)
-      assert json_response(new_conn, 200)["data"] == %{
+      assert json_response(new_conn, 200)["step_validation"] == %{
         "id" => id,
         "comment" => "some updated comment",
         "valid" => 43}
