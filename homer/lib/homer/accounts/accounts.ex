@@ -154,7 +154,7 @@ defmodule Homer.Accounts do
     {_, %{"aud" => aud}} = conn.private.guardian_default_claims
     [_, id] = String.split(aud, ":")
 
-    get_user!(id).is_admin
+    get_user!(id).admin
   end
 
 
