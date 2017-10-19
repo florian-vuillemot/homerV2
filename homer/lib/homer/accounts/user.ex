@@ -9,6 +9,7 @@ defmodule Homer.Accounts.User do
   schema "users" do
     field :email, :string
     field :password, :string
+    field :admin, :integer, default: 0
 
     has_many :investor_on, Investor
     has_many :funders, Funder

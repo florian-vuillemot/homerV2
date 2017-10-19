@@ -37,6 +37,7 @@ defmodule HomerWeb.Accounts.UserControllerTest do
       assert json_response(new_conn, 200)["user"] == %{
         "id" => id,
         "email" => "some email",
+        "admin" => 0,
         "investor_on" => [],
         "funders" => []}
     end
@@ -65,6 +66,7 @@ defmodule HomerWeb.Accounts.UserControllerTest do
       assert json_response(new_conn, 200)["user"] == %{
         "id" => id,
         "email" => "some updated email",
+        "admin" => 0,
         "investor_on" => [],
         "funders" => []}
     end

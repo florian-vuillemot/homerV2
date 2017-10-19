@@ -38,6 +38,7 @@ defmodule Homer.AccountsTest do
       assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
       assert user.email == "some email"
       assert user.password == "some password"
+      assert user.admin == 0
       assert user.funders == []
       assert user.investor_on == []
     end
@@ -52,6 +53,7 @@ defmodule Homer.AccountsTest do
       assert %User{} = user
       assert user.email == "some updated email"
       assert user.password == "some updated password"
+      assert user.admin == 0
       assert user.funders == []
       assert user.investor_on == []
     end

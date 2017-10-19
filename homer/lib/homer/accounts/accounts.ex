@@ -142,6 +142,21 @@ defmodule Homer.Accounts do
     end
   end
 
+  @doc """
+    Return true if user is a admin
+
+    iex> is_admin(%Plug.Conn{private: %{:guardian_default_claims => {:ok, %{"aud" => "User:id_admin"}}}})
+          True
+    iex> is_admin(%Plug.Conn{private: %{:guardian_default_claims => {:ok, %{"aud" => "User:non_id_admin"}}}})
+          False
+"""
+  def is_admin?(conn) do
+    {_, %{"aud" => aud}} = conn.private.guardian_default_claims
+    [_, id] = String.split(aud, ":")
+
+    get_user!(id).is_admin
+  end
+
 
   #######################################################################################
   #######################################################################################
