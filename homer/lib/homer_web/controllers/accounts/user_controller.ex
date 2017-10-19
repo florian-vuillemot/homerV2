@@ -39,4 +39,18 @@ defmodule HomerWeb.Accounts.UserController do
       send_resp(conn, :no_content, "")
     end
   end
+
+  def make_admin(conn, %{"id" => id}) do
+    {conn_id, _} =
+      conn
+      |> HomerWeb.Utilities.GetId.get_id
+      |> Integer.parse
+
+    case Accounts.is_admin?(conn_id) do
+      true ->
+        Accounts.make_admin(id)
+        send_resp(conn, :no_content, "")
+      _ -> send_resp(conn, :not_found, "")
+    end
+  end
 end

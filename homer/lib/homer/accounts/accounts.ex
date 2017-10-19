@@ -145,18 +145,34 @@ defmodule Homer.Accounts do
   @doc """
     Return true if user is a admin
 
-    iex> is_admin(%Plug.Conn{private: %{:guardian_default_claims => {:ok, %{"aud" => "User:id_admin"}}}})
-          True
-    iex> is_admin(%Plug.Conn{private: %{:guardian_default_claims => {:ok, %{"aud" => "User:non_id_admin"}}}})
-          False
+    iex> is_admin(admin_user_id)
+          true
+    iex> is_admin(no_admin_user_id)
+          false
 """
-  def is_admin?(conn) do
-    {_, %{"aud" => aud}} = conn.private.guardian_default_claims
-    [_, id] = String.split(aud, ":")
-
-    get_user!(id).admin
+  def is_admin?(user_id) when is_integer(user_id) do
+    case get_user!(user_id).admin do
+      1 -> true
+      _ -> false
+    end
   end
 
+  @doc """
+    Make the user admin and save.
+
+    iex> make_admin(user, %{field: new_value})
+        {:ok, %User{}}
+
+    iex> make_admin(%{user_id: bad_id})
+        {:error, %Ecto.Changeset{}}
+"""
+  def make_admin(user_id) when is_integer(user_id) do
+    user = get_user!(user_id)
+
+    user
+    |> User.make_admin()
+    |> Repo.update()
+  end
 
   #######################################################################################
   #######################################################################################

@@ -24,4 +24,11 @@ defmodule Homer.Accounts.User do
     |> validate_required([:email, :password])
     |> unique_constraint(:email)
   end
+
+  @doc false
+  def make_admin(%User{} = user) do
+    user
+    |> cast(%{admin: 1}, [:admin])
+    |> validate_required([:email, :password])
+  end
 end
