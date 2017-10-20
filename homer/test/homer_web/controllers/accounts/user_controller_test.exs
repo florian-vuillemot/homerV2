@@ -97,7 +97,7 @@ defmodule HomerWeb.Accounts.UserControllerTest do
     setup [:create_user]
 
     test "deletes chosen user", %{conn: conn, user: user} do
-      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn, true)
       new_conn = delete conn, accounts_user_path(conn, :delete, user)
       assert response(new_conn, 204)
       assert_error_sent 404, fn ->
@@ -128,6 +128,13 @@ defmodule HomerWeb.Accounts.UserControllerTest do
       user = fixture(:user)
       conn = delete conn, accounts_user_path(conn, :delete, user)
       assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "cant delete a user", %{conn: conn} do
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      user = fixture(:user)
+      new_conn = delete conn, accounts_user_path(conn, :delete, user)
+      assert new_conn.status == 403
     end
 
     test "not allow to make admin", %{conn: conn} do
