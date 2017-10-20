@@ -41,10 +41,7 @@ defmodule HomerWeb.Accounts.UserController do
   end
 
   def make_admin(conn, %{"id" => id}) do
-    {conn_id, _} =
-      conn
-      |> HomerWeb.Utilities.GetId.get_id
-      |> Integer.parse
+    conn_id = HomerWeb.Utilities.GetId.get_id(conn)
 
     case Accounts.is_admin?(conn_id) do
       true ->

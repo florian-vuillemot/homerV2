@@ -27,7 +27,7 @@ defmodule HomerWeb.StepTemplates.StepTemplateControllerTest do
 
   describe "create step_template" do
     test "renders step_template when data is valid", %{conn: conn} do
-      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn, true)
       new_conn = post conn, step_templates_step_template_path(conn, :create), step_template: @create_attrs
       assert %{"id" => id} = json_response(new_conn, 201)["data"]
 
@@ -40,7 +40,7 @@ defmodule HomerWeb.StepTemplates.StepTemplateControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn} do
-      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn, true)
       new_conn = post conn, step_templates_step_template_path(conn, :create), step_template: @invalid_attrs
       assert json_response(new_conn, 422)["errors"] != %{}
     end
@@ -50,7 +50,7 @@ defmodule HomerWeb.StepTemplates.StepTemplateControllerTest do
     setup [:create_step_template]
 
     test "renders step_template when data is valid", %{conn: conn, step_template: %StepTemplate{id: id} = step_template} do
-      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn, true)
       new_conn = put conn, step_templates_step_template_path(conn, :update, step_template), step_template: @update_attrs
       assert %{"id" => ^id} = json_response(new_conn, 200)["data"]
 
@@ -63,7 +63,7 @@ defmodule HomerWeb.StepTemplates.StepTemplateControllerTest do
     end
 
     test "renders errors when data is invalid", %{conn: conn, step_template: step_template} do
-      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn, true)
       new_conn = put conn, step_templates_step_template_path(conn, :update, step_template), step_template: @invalid_attrs
       assert json_response(new_conn, 422)["errors"] != %{}
     end
@@ -73,7 +73,7 @@ defmodule HomerWeb.StepTemplates.StepTemplateControllerTest do
     setup [:create_step_template]
 
     test "deletes chosen step_template", %{conn: conn, step_template: step_template} do
-      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn, true)
       new_conn = delete conn, step_templates_step_template_path(conn, :delete, step_template)
       assert response(new_conn, 204)
       assert_error_sent 404, fn ->
@@ -99,16 +99,36 @@ defmodule HomerWeb.StepTemplates.StepTemplateControllerTest do
       assert json_response(conn, 401)["message"] != %{}
     end
 
+    test "cant create", %{conn: conn} do
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = post conn, step_templates_step_template_path(conn, :create), step_template: @create_attrs
+      assert new_conn.status == 403
+    end
+
     test "not allow to update a step_template", %{conn: conn} do
       user = fixture(:step_template)
       conn = put conn, step_templates_step_template_path(conn, :update, user), user: @update_attrs
       assert json_response(conn, 401)["message"] != %{}
     end
 
+    test "cant update", %{conn: conn} do
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      step_template = fixture(:step_template)
+      new_conn = put conn, step_templates_step_template_path(conn, :update, step_template), step_template: @update_attrs
+      assert new_conn.status == 403
+    end
+
     test "not allow to delete a step_template", %{conn: conn} do
-      user = fixture(:step_template)
-      conn = delete conn, step_templates_step_template_path(conn, :delete, user)
+      step_template = fixture(:step_template)
+      conn = delete conn, step_templates_step_template_path(conn, :delete, step_template)
       assert json_response(conn, 401)["message"] != %{}
+    end
+
+    test "cant delete", %{conn: conn} do
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      step_template = fixture(:step_template)
+      new_conn = delete conn, step_templates_step_template_path(conn, :delete, step_template)
+      assert new_conn.status == 403
     end
   end
 

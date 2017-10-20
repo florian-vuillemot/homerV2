@@ -1,11 +1,10 @@
 defmodule HomerWeb.Accounts.UserAuth do
   use HomerWeb, :controller
 
-  def login(conn, _params) do
-    email = "email" #Map.get(user, "email")
-    password = "pass" #Map.get(user, "password")
+  def login(conn, params) do
+    email = Map.get(params, "email")
+    password = Map.get(params, "password")
     Homer.Accounts.create_user(%{email: email, password: password})
-
 
     case Homer.Accounts.find_and_confirm_password(email, password) do
       {:ok, user} ->
