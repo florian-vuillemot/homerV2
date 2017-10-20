@@ -3,6 +3,8 @@ defmodule HomerWeb.StepTemplates.StepTemplateController do
 
   alias Homer.StepTemplates
   alias Homer.StepTemplates.StepTemplate
+  alias HomerWeb.Utilities.GetId
+  alias Homer.Accounts
 
   action_fallback HomerWeb.FallbackController
 
@@ -12,11 +14,16 @@ defmodule HomerWeb.StepTemplates.StepTemplateController do
   end
 
   def create(conn, %{"step_template" => step_template_params}) do
-    with {:ok, %StepTemplate{} = step_template} <- StepTemplates.create_step_template(step_template_params) do
-      conn
-      |> put_status(:created)
-      |> put_resp_header("location", step_templates_step_template_path(conn, :show, step_template))
-      |> render("show.json", step_template: step_template)
+    case Accounts.is_admin?(GetId.get_id(conn)) do
+      true ->
+        with {:ok, %StepTemplate{} = step_template} <- StepTemplates.create_step_template(step_template_params) do
+          conn
+          |> put_status(:created)
+          |> put_resp_header("location", step_templates_step_template_path(conn, :show, step_template))
+          |> render("show.json", step_template: step_template)
+        end
+      _ ->
+        send_resp(conn, :forbidden, "")
     end
   end
 
@@ -26,17 +33,27 @@ defmodule HomerWeb.StepTemplates.StepTemplateController do
   end
 
   def update(conn, %{"id" => id, "step_template" => step_template_params}) do
-    step_template = StepTemplates.get_step_template!(id)
+    case Accounts.is_admin?(GetId.get_id(conn)) do
+      true ->
+        step_template = StepTemplates.get_step_template!(id)
 
-    with {:ok, %StepTemplate{} = step_template} <- StepTemplates.update_step_template(step_template, step_template_params) do
-      render(conn, "show.json", step_template: step_template)
+        with {:ok, %StepTemplate{} = step_template} <- StepTemplates.update_step_template(step_template, step_template_params) do
+          render(conn, "show.json", step_template: step_template)
+        end
+      _ ->
+        send_resp(conn, :forbidden, "")
     end
   end
 
   def delete(conn, %{"id" => id}) do
-    step_template = StepTemplates.get_step_template!(id)
-    with {:ok, %StepTemplate{}} <- StepTemplates.delete_step_template(step_template) do
-      send_resp(conn, :no_content, "")
+    case Accounts.is_admin?(GetId.get_id(conn)) do
+      true ->
+        step_template = StepTemplates.get_step_template!(id)
+        with {:ok, %StepTemplate{}} <- StepTemplates.delete_step_template(step_template) do
+          send_resp(conn, :no_content, "")
+        end
+      _ ->
+        send_resp(conn, :forbidden, "")
     end
   end
 end

@@ -21,6 +21,9 @@ defmodule HomerWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  pipeline :auth do
     plug Guardian.Plug.VerifyHeader, realm: "Bearer"
     plug Guardian.Plug.LoadResource
     plug Guardian.Plug.EnsureAuthenticated
@@ -36,56 +39,67 @@ defmodule HomerWeb.Router do
   scope "/accounts", HomerWeb.Accounts, as: :accounts do
     pipe_through :api
 
-    resources "/users", UserController
-
     post "/login", UserAuth, :login
     get "/logout", UserAuth, :logout
+    post "/create", UserController, :create
+
+    pipe_through :auth
+    post "/make_admin", UserController, :make_admin
+    resources "/users", UserController, except: [:create]
   end
 
   scope "/monetizations", HomerWeb.Monetizations, as: :monetizations do
     pipe_through :api
+    pipe_through :auth
 
     resources "/fundings", FundingController
   end
 
   scope "/builders", HomerWeb.Builders, as: :builders do
     pipe_through :api
+    pipe_through :auth
 
     resources "/projects", ProjectController
   end
 
   scope "/invests", HomerWeb.Invests, as: :invests do
     pipe_through :api
+    pipe_through :auth
 
     resources "/investors", InvestorController, except: [:edit, :update, :delete]
   end
 
   scope "/step_templates", HomerWeb.StepTemplates, as: :step_templates do
     pipe_through :api
+    pipe_through :auth
 
     resources "/step_templates", StepTemplateController
   end
 
   scope "/steps", HomerWeb.Steps, as: :steps do
     pipe_through :api
+    pipe_through :auth
 
     resources "/steps", StepController, except: [:create]
   end
 
   scope "/steps_validation", HomerWeb.StepsValidation, as: :steps_validation do
     pipe_through :api
+    pipe_through :auth
 
     resources "/steps_validation", StepValidationController, except: [:edit, :update, :delete]
   end
 
   scope "/invests_allows", HomerWeb.InvestsAllows, as: :invests_allows do
     pipe_through :api
+    pipe_through :auth
 
     resources "/invests_allows", InvestAllowController
   end
 
   scope "/funders", HomerWeb.Funders, as: :funders do
     pipe_through :api
+    pipe_through :auth
 
     resources "/funders", FunderController
   end

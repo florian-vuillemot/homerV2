@@ -3,6 +3,8 @@ defmodule HomerWeb.Accounts.UserController do
 
   alias Homer.Accounts
   alias Homer.Accounts.User
+  alias HomerWeb.Utilities.GetId
+  alias Homer.Accounts
 
   action_fallback HomerWeb.FallbackController
 
@@ -34,9 +36,25 @@ defmodule HomerWeb.Accounts.UserController do
   end
 
   def delete(conn, %{"id" => id}) do
-    user = Accounts.get_user!(id)
-    with {:ok, %User{}} <- Accounts.delete_user(user) do
-      send_resp(conn, :no_content, "")
+    case Accounts.is_admin?(GetId.get_id(conn)) do
+      true ->
+        user = Accounts.get_user!(id)
+        with {:ok, %User{}} <- Accounts.delete_user(user) do
+          send_resp(conn, :no_content, "")
+        end
+      _ ->
+        send_resp(conn, :forbidden, "")
+    end
+  end
+
+  def make_admin(conn, %{"id" => id}) do
+    conn_id = HomerWeb.Utilities.GetId.get_id(conn)
+
+    case Accounts.is_admin?(conn_id) do
+      true ->
+        Accounts.make_admin(id)
+        send_resp(conn, :no_content, "")
+      _ -> send_resp(conn, :not_found, "")
     end
   end
 end

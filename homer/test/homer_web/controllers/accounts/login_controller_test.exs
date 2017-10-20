@@ -14,8 +14,11 @@ defmodule HomerWeb.Accounts.LoginControllerTest do
     Create a customer and log it.
     Take a conn parameter, fill and return it.
   """
-  def auth_user(conn) do
-    user = Homer.AccountsTest.user_fixture(%{password: "test_password"}, true)
+  def auth_user(conn, create_admin \\ false) do
+    user = case create_admin do
+      false -> Homer.AccountsTest.user_fixture(%{password: "test_password"}, true)
+      _ -> Homer.AccountsTest.create_admin(%{password: "test_password"}, true)
+    end
     {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user)
 
     new_conn = conn

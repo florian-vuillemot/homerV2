@@ -10,11 +10,15 @@ defmodule Homer.AccountsTest do
     @update_attrs %{email: "some updated email", password: "some updated password"}
     @invalid_attrs %{email: nil, password: nil}
 
-    def user_fixture(attrs \\ %{}, new_name \\ false) do
-      attrs = case new_name do
+    defp update_name(attrs, new_name) do
+      case new_name do
         true -> Map.put(attrs, :email, "#{Enum.random(0..4242)}")
         _ -> attrs
       end
+    end
+
+    def user_fixture(attrs \\ %{}, new_name \\ false) do
+      attrs = update_name(attrs, new_name)
 
       {:ok, user} =
         attrs
@@ -22,6 +26,18 @@ defmodule Homer.AccountsTest do
         |> Accounts.create_user()
 
       user
+    end
+
+    def create_admin(attrs \\ %{}, new_name \\ false) do
+      attrs = update_name(attrs, new_name)
+
+      {:ok, user} =
+        attrs
+        |> Enum.into(@valid_attrs)
+        |> Accounts.create_user()
+
+      Accounts.make_admin(user.id)
+      Accounts.get_user!(user.id)
     end
 
     test "list_users/0 returns all users" do
@@ -38,6 +54,7 @@ defmodule Homer.AccountsTest do
       assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
       assert user.email == "some email"
       assert user.password == "some password"
+      assert user.admin == 0
       assert user.funders == []
       assert user.investor_on == []
     end
@@ -52,6 +69,7 @@ defmodule Homer.AccountsTest do
       assert %User{} = user
       assert user.email == "some updated email"
       assert user.password == "some updated password"
+      assert user.admin == 0
       assert user.funders == []
       assert user.investor_on == []
     end
@@ -92,6 +110,27 @@ defmodule Homer.AccountsTest do
     test "find_and_confirm_password/2 user not exist and bad pass" do
       user = user_fixture()
       assert {:error, :unauthorized} = Accounts.find_and_confirm_password("not exist #{user.email}",  "bad pass #{user.password}")
+    end
+
+    test "create admin" do
+      admin = create_admin()
+      user = user_fixture(@valid_attrs, true)
+
+      assert admin.admin == 1
+
+      assert user.admin == 0
+      Accounts.make_admin(user.id)
+      user_update = Accounts.get_user!(user.id)
+      assert user_update.admin == 1
+    end
+
+    test "test is_admin user" do
+      user = user_fixture(@valid_attrs, true)
+
+      assert false == Accounts.is_admin?(user.id)
+      Accounts.make_admin(user.id)
+      user_update = Accounts.get_user!(user.id)
+      assert true == Accounts.is_admin?(user_update.id)
     end
   end
 end
