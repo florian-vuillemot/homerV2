@@ -1,9 +1,12 @@
 defmodule HomerWeb.Accounts.UserAuth do
   use HomerWeb, :controller
 
+  action_fallback HomerWeb.FallbackController
+
   def login(conn, params) do
-    email = Map.get(params, "email")
-    password = Map.get(params, "password")
+    email = HomerWeb.Utilities.Convertor.get_correct_key(params, :email, "")
+    password = HomerWeb.Utilities.Convertor.get_correct_key(params, :password, "")
+
     Homer.Accounts.create_user(%{email: email, password: password})
 
     case Homer.Accounts.find_and_confirm_password(email, password) do
@@ -13,12 +16,14 @@ defmodule HomerWeb.Accounts.UserAuth do
 
         case Guardian.Plug.claims(new_conn) do
           {:ok, claims} ->
-            exp = Map.get(claims, "exp")
+            exp = HomerWeb.Utilities.Convertor.get_correct_key(claims, :exp, "")
 
             new_conn
             |> put_status(200)
+            |> Plug.Conn.put_req_header("accept", "application/json")
             |> put_resp_header("authorization", "Bearer #{jwt}")
             |> put_resp_header("x-expires", "#{exp}")
+            |> put_view(HomerWeb.Accounts.UserAuthView)
             |> render("show.json", %{user: user, jwt: jwt, exp: exp})
           _ ->
             render_error(conn)
@@ -49,6 +54,7 @@ defmodule HomerWeb.Accounts.UserAuth do
   defp render_error(conn) do
     conn
     |> put_status(401)
+    |> put_view(HomerWeb.Accounts.UserAuthView)
     |> render("error.json", %{message: "Could not login"})
   end
 end
