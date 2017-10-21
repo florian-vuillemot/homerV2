@@ -2,11 +2,33 @@ defmodule HomerWeb.Accounts.LoginControllerTest do
   use HomerWeb.ConnCase
 
   describe "login" do
-    test "test login users", %{conn: conn} do
-      conn = auth_user(conn)
+    test "not login", %{conn: conn} do
       conn = get conn, accounts_user_path(conn, :index)
-      len_res = length(json_response(conn, 200)["users"])
-      assert len_res == 1
+      assert conn.status == 401
+    end
+
+    test "test login users", %{conn: conn} do
+      user = HomerWeb.Accounts.UserControllerTest.fixture(:user)
+      user_data = %{"email": user.email, "password": user.password}
+      new_conn = HomerWeb.Accounts.UserAuth.login(conn, user_data)
+      assert new_conn.assigns.jwt != ""
+    end
+
+    test "test logout", %{conn: conn} do
+      user = HomerWeb.Accounts.UserControllerTest.fixture(:user)
+      user_data = %{"email": user.email, "password": user.password}
+      new_conn = HomerWeb.Accounts.UserAuth.login(conn, user_data)
+      assigns_conn = Map.put(conn, :jwt, new_conn.assigns.jwt)
+      conn = Map.put(conn, :assigns, assigns_conn)
+      HomerWeb.Accounts.UserAuth.logout(conn, user_data)
+      conn = get conn, accounts_user_path(conn, :index)
+      assert conn.status == 401
+    end
+
+    test "test bad login", %{conn: conn} do
+      user_data = %{"email": "", "password": ""}
+      new_conn = HomerWeb.Accounts.UserAuth.login(conn, user_data)
+      assert new_conn.assigns.message == "Could not login"
     end
   end
 
