@@ -23,6 +23,15 @@ defmodule Homer.FundersTest do
       funder
     end
 
+    def set_funder(user_id, project_id, status \\ "Creator") do
+      attrs = %{
+        user_id: user_id,
+        project_id: project_id,
+        status: status
+      }
+      Funders.create_funder(attrs)
+    end
+
     test "list_funders/0 returns all funders" do
       funder = funder_fixture()
       assert Funders.list_funders() == [funder]

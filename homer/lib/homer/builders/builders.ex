@@ -7,6 +7,7 @@ defmodule Homer.Builders do
   alias Homer.Repo
 
   alias Homer.Builders.Project
+  alias Homer.Accounts.User
 
   @doc """
   Return string the status for project from atom.
@@ -135,11 +136,11 @@ defmodule Homer.Builders do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_project(%Project{} = project, attrs) do
+  def update_project(%Project{} = project, attrs, force \\ false) do
     init_project = get_project!(project.id)
 
     # Not allow change funding references after init.
-    attrs = case Homer.Utilities.Constructor.same_fk(init_project, attrs, [:funding_id]) do
+    attrs = case force === true or Homer.Utilities.Constructor.same_fk(init_project, attrs, [:funding_id]) do
       true ->
         attrs
       _ ->
@@ -195,6 +196,14 @@ defmodule Homer.Builders do
 
     {actual_invest, project.to_raise}
   end
+
+  def is_funder(%Project{} = project, %User{id: id} = _user) do
+    Enum.any?(project.funders, fn (u) -> u.user_id === id end)
+  end
+
+  ##################################
+  ##################################
+  ##################################
 
   defp preload_project(project) do
     project

@@ -36,7 +36,7 @@ defmodule HomerWeb.Accounts.LoginControllerTest do
     Create a customer and log it.
     Take a conn parameter, fill and return it.
   """
-  def auth_user(conn, create_admin \\ false) do
+  def auth_user(conn, create_admin \\ false, return_id \\ false) do
     user = case create_admin do
       false -> Homer.AccountsTest.user_fixture(%{password: "test_password"}, true)
       _ -> Homer.AccountsTest.create_admin(%{password: "test_password"}, true)
@@ -47,6 +47,9 @@ defmodule HomerWeb.Accounts.LoginControllerTest do
                |> Plug.Conn.put_req_header("accept", "application/json")
                |> Plug.Conn.put_req_header("authorization", "Bearer #{jwt}")
 
-    new_conn
+    case return_id do
+      true -> {user.id, new_conn}
+      _ -> new_conn
+    end
   end
 end
