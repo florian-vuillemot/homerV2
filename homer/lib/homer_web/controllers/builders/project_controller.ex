@@ -27,9 +27,16 @@ defmodule HomerWeb.Builders.ProjectController do
 
   def update(conn, %{"id" => id, "project" => project_params}) do
     project = Builders.get_project!(id)
+    user =  HomerWeb.Utilities.GetId.get_id(conn) |> Homer.Accounts.get_user!
+    admin = Homer.Accounts.is_admin?(user)
 
-    with {:ok, %Project{} = project} <- Builders.update_project(project, project_params) do
-      render(conn, "show.json", project: project)
+    case admin or Builders.is_funder(project, user) do
+      true ->
+        with {:ok, %Project{} = project} <- Builders.update_project(project, project_params, admin) do
+          render(conn, "show.json", project: project)
+        end
+      _ ->
+        send_resp(conn, :forbidden, "")
     end
   end
 
