@@ -41,9 +41,14 @@ defmodule HomerWeb.Builders.ProjectController do
   end
 
   def delete(conn, %{"id" => id}) do
-    project = Builders.get_project!(id)
-    with {:ok, %Project{}} <- Builders.delete_project(project) do
-      send_resp(conn, :no_content, "")
+    case Homer.Accounts.is_admin?(HomerWeb.Utilities.GetId.get_id(conn)) do
+      true ->
+        project = Builders.get_project!(id)
+        with {:ok, %Project{}} <- Builders.delete_project(project) do
+          send_resp(conn, :no_content, "")
+        end
+      _ ->
+        send_resp(conn, :forbidden, "")
     end
   end
 end

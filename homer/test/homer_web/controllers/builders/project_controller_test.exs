@@ -165,12 +165,18 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
     setup [:create_project]
 
     test "deletes chosen project", %{conn: conn, project: project} do
-      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn, true)
       new_conn = delete conn, builders_project_path(conn, :delete, project)
       assert response(new_conn, 204)
       assert_error_sent 404, fn ->
         get conn, builders_project_path(conn, :show, project)
       end
+    end
+
+    test "deletes chosen not allow project", %{conn: conn, project: project} do
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
+      new_conn = delete conn, builders_project_path(conn, :delete, project)
+      assert response(new_conn, 403)
     end
   end
 
