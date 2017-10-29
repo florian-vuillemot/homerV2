@@ -145,9 +145,9 @@ defmodule Homer.Accounts do
   @doc """
     Return true if user is a admin
 
-    iex> is_admin(admin_user_id)
+    iex> is_admin?(admin_user_id)
           true
-    iex> is_admin(no_admin_user_id)
+    iex> is_admin?(no_admin_user_id)
           false
 """
   def is_admin?(user_id) when is_integer(user_id) do
@@ -155,6 +155,18 @@ defmodule Homer.Accounts do
       1 -> true
       _ -> false
     end
+  end
+
+  @doc """
+      Return true if user is a admin
+
+      iex> is_admin?(admin_user)
+            true
+      iex> is_admin?(no_admin_user)
+            false
+  """
+  def is_admin?(user) do
+    is_admin?(user.id)
   end
 
   @doc """
