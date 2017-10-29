@@ -98,7 +98,8 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
     test "renders project when data is valid", %{conn: conn, project: %Project{id: id, create_at: create_at} = project} do
       conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
       new_conn = put conn, builders_project_path(conn, :update, project), project: create_attrs(@update_attrs)
-      assert json_response(new_conn, 422)["errors"] != %{}
+      #assert json_response(new_conn, 422)["errors"] != %{}
+      assert response(new_conn, 403)
 
       new_conn = get conn, builders_project_path(conn, :show, id)
       update_project = json_response(new_conn, 200)["project"]
@@ -119,10 +120,44 @@ defmodule HomerWeb.Builders.ProjectControllerTest do
         "funding" => project.funding}
     end
 
+    test "Update before assign", %{conn: conn, project: %Project{} = _project} do
+      {user_id, conn} = HomerWeb.Accounts.LoginControllerTest.auth_user(conn, false, true)
+      attrs = Map.replace(create_attrs(), :name, "new name")
+      new_conn = post conn, builders_project_path(conn, :create), project: attrs
+      %{"id" => project_id} = json_response(new_conn, 201)["project"]
+
+      project = Homer.Builders.get_project!(project_id)
+      Homer.FundersTest.set_funder(user_id, project_id)
+
+      attrs =
+        Map.put(@update_attrs, :funding_id, project.funding_id)
+        |> Map.put(:id, project.id)
+
+      new_conn = put conn, builders_project_path(conn, :update, project), project: attrs
+      assert json_response(new_conn, 200)["project"] != %{}
+    end
+
     test "renders errors when data is invalid", %{conn: conn, project: project} do
       conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn)
       new_conn = put conn, builders_project_path(conn, :update, project), project: create_attrs(@invalid_attrs)
-      assert json_response(new_conn, 422)["errors"] != %{}
+      #assert json_response(new_conn, 422)["errors"] != %{}
+      assert response(new_conn, 403)
+    end
+
+    test "Admin update before assign", %{conn: conn, project: %Project{} = _project} do
+      conn = HomerWeb.Accounts.LoginControllerTest.auth_user(conn, true)
+      attrs = Map.replace(create_attrs(), :name, "new name")
+      new_conn = post conn, builders_project_path(conn, :create), project: attrs
+      %{"id" => project_id} = json_response(new_conn, 201)["project"]
+
+      project = Homer.Builders.get_project!(project_id)
+
+      attrs =
+        Map.put(@update_attrs, :funding_id, project.funding_id)
+        |> Map.put(:id, project.id)
+
+      new_conn = put conn, builders_project_path(conn, :update, project), project: attrs
+      assert json_response(new_conn, 200)["project"] != %{}
     end
   end
 
