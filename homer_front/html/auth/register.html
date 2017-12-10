@@ -1,0 +1,33 @@
+<div class="row">
+    <form class="col s12">
+        <div class="row">
+            <div class="input-field col s6">
+                <input ng-model="prenom" type="text" class="validate">
+                <label>Prénom</label>
+            </div>
+            <div class="input-field col s6">
+                <input ng-model="nom" type="text" class="validate">
+                <label>Nom</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <input ng-model="email" type="email" class="validate">
+                <label>Email</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <input ng-model="password" type="password" class="validate">
+                <label>Mot de passe</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="input-field col s12">
+                <input ng-model="validatePassword" type="password" class="validate">
+                <label>Confirmer le mot de passe</label>
+            </div>
+        </div>
+    </form>
+    <a class="waves-effect waves-light btn" ng-click="createAccount()" href="#!/">Création du compte</a>
+</div>

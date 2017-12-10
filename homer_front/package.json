@@ -1,0 +1,16 @@
+{
+  "name": "homer_front",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">\r   <a href=\"http://materializecss.com/\">\r     <img src=\"http://materializecss.com/res/materialize.svg\" width=\"150\">\r   </a>",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "angular-route": "^1.6.7",
+    "express": "^4.16.2"
+  }
+}

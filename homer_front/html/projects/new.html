@@ -1,0 +1,58 @@
+<div class="row">
+    <form class="col s12">
+        <div class="row">
+            <div class="input-field col s12">
+                <h5>Nom du projet</h5>
+                <input ng-model="name" type="text" class="validate">
+            </div>
+            <div class="input-field col s12">
+                <h5>Epices demandées</h5>
+                <p class="range-field">
+                    <input ng-model="spices" type="range" id="test5" min="0" max="360" />
+                </p>
+            </div>
+            <div class="input-field col s12">
+                <h5>Dépot GitHub</h5>
+                <input ng-model="github" type="text" class="validate">
+            </div>
+            <div class="input-field col s12">
+                <h5>Follow Up 1</h5>
+                <input ng-model="datefu1" type="text" class="datepicker">
+                <script>
+                    $('.datepicker').pickadate({
+                        selectMonths: true, // Creates a dropdown to control month
+                        selectYears: 1, // Creates a dropdown of 15 years to control year,
+                        today: 'Today',
+                        clear: 'Clear',
+                        close: 'Ok',
+                        closeOnSelect: false // Close upon selecting a date,
+                    });
+                </script>
+                <textarea ng-model="fu1" id="textarea1"></textarea>
+                <script>
+                    ClassicEditor
+                        .create(document.querySelector('#textarea1'))
+                </script>
+            </div>
+            <div class="input-field col s12">
+                <h5>Follow Up 2</h5>
+                <input ng-model="datefu2" type="text" class="datepicker">
+                <textarea ng-model="fu2" id="textarea2"></textarea>
+                <script>
+                    ClassicEditor
+                        .create(document.querySelector('#textarea2'))
+                </script>
+            </div>
+            <div class="input-field col s12">
+                <h5>Delivery</h5>
+                <input ng-model="dateDelivery" placeholder="Date" type="text" class="datepicker">
+                <textarea ng-model="delivery" id="textarea3"></textarea>
+                <script>
+                    ClassicEditor
+                        .create(document.querySelector('#textarea3'))
+                </script>
+            </div>
+        </div>
+    </form>
+    <a class="waves-effect waves-light btn" ng-click="sendProject()" href="#!/">Valider</a>
+</div>
